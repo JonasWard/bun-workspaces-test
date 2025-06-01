@@ -1,0 +1,233 @@
+{
+  "types": [
+    {
+      "label": "BuildingType",
+      "canReference": true,
+      "fields": [
+        ["location", "LocationType", false, false, false],
+        ["address", "string", false, false, false],
+        ["ownerId", "UserType", true, false, false],
+        ["formerUse", "string", false, false, false],
+        ["gfa", "number", false, false, false],
+        ["complexity", "number", false, false, false],
+        ["img", "string", false, false, false]
+      ]
+    },
+    {
+      "label": "LocationType",
+      "canReference": false,
+      "fields": [
+        ["longitude", "number", false, false, false],
+        ["latitude", "number", false, false, false],
+        ["height", "number", false, false, false]
+      ]
+    },
+    {
+      "label": "UserType",
+      "canReference": true,
+      "fields": [
+        ["name", "string", false, false, false],
+        ["address", "string", false, false, false],
+        ["company", "string", false, false, false],
+        ["mail", "string", false, false, false],
+        ["userCategory", "UserCategory", false, false, false]
+      ]
+    },
+    {
+      "label": "GPRTestType",
+      "canReference": false,
+      "fields": [
+        ["rebarDiameter", "number", false, false, false],
+        ["coverDepth", "number", false, false, false],
+        ["rebarAmount", "number", false, false, false],
+        ["date", "string", false, false, false],
+        ["userId", "string", false, false, false],
+        ["location", "LocationType", false, false, false]
+      ]
+    },
+    {
+      "label": "ChemicalTestType",
+      "canReference": false,
+      "fields": [
+        ["carbonationDepth", "number", false, false, false],
+        ["chlorideContent", "number", false, false, false],
+        ["alkaliReactivity", "number", false, false, false],
+        ["date", "string", false, false, false],
+        ["userId", "string", false, false, false],
+        ["location", "LocationType", false, false, false]
+      ]
+    },
+    {
+      "label": "ComponentType",
+      "canReference": true,
+      "fields": [
+        ["buildingId", "BuildingType", true, false, false],
+        ["img", "string", false, true, false],
+        ["manufacturerId", "UserType", true, false, false],
+        ["condition", "VisualConditionCategory", false, false, false],
+        ["noHarmfulSubstance", "boolean", false, false, false],
+        ["availableFrom", "string", false, false, false],
+        ["buyer", "UserType", true, false, false],
+        ["price", "number", false, false, false],
+        ["loadingCondition", "string", false, false, false],
+        ["planReference", "string", false, false, false],
+        ["yaw", "number", false, false, false],
+        ["geometryTypeId", "GeometryType", true, false, false],
+        ["floor", "number", false, false, false],
+        ["location", "LocationType", false, false, false],
+        ["visualInspection", "VisualInspectionType", false, true, false],
+        ["liveload", "number", false, false, false],
+        ["destructiveTest", "DestructiveTestType", false, false, true],
+        ["coreTest", "CoreTestType", false, false, true],
+        ["chemicalTest", "ChemicalTestType", false, false, true],
+        ["gprTest", "GPRTestType", false, false, true],
+        ["reboundTest", "ReboundTestType", false, true, false]
+      ]
+    },
+    {
+      "label": "CoreTestType",
+      "canReference": false,
+      "fields": [
+        ["coreDiameter", "number", false, false, false],
+        ["coreCompressiveStrength", "number", false, false, false],
+        ["date", "string", false, false, false],
+        ["userId", "UserType", true, false, false],
+        ["location", "LocationType", false, false, false]
+      ]
+    },
+    {
+      "label": "CrossSectionType",
+      "canReference": true,
+      "fields": [
+        ["crossSectionCategory", "CrossSectionCategory", false, false, false],
+        ["width", "number", false, false, false],
+        ["height", "number", false, false, false],
+        ["moment", "number", false, false, false],
+        ["shear", "number", false, false, false],
+        ["normal", "number", false, false, false],
+        ["rebarTypeId", "string", false, false, false],
+        ["concreteMaterialTypeId", "MaterialType", true, false, false],
+        ["preStressStrandType", "PreStressStrandType", false, false, false]
+      ]
+    },
+    {
+      "label": "DestructiveTestType",
+      "canReference": false,
+      "fields": [
+        ["geometryTypeId", "GeometryType", true, false, false],
+        ["imgLongitudinal", "string", false, false, false],
+        ["imgTransverse", "string", false, false, false],
+        ["userId", "UserType", true, false, false],
+        ["date", "string", false, false, false],
+        ["shearStrength", "number", false, false, false],
+        ["compressiveStrength", "number", false, false, false],
+        ["tensileStrength", "number", false, false, false],
+        ["youngsModulus", "number", false, false, false],
+        ["momentCapacity", "number", false, false, false],
+        ["shearCapacity", "number", false, false, false],
+        ["normalCapacity", "number", false, false, false],
+        ["density", "number", false, false, false]
+      ]
+    },
+    {
+      "label": "GeometryType",
+      "canReference": true,
+      "fields": [
+        ["crossSectionId", "CrossSectionType", true, false, false],
+        ["componentCategory", "ComponentCategory", false, false, false],
+        ["length", "number", false, false, true],
+        ["height", "number", false, false, true],
+        ["originalGeometryId", "GeometryType", true, false, true]
+      ]
+    },
+    {
+      "label": "MaterialType",
+      "canReference": true,
+      "fields": [
+        ["crossSectionId", "CrossSectionType", true, false, false],
+        ["materialCategory", "MaterialCategory", false, false, false],
+        ["compressiveStrength", "number", false, false, false],
+        ["tensileStrength", "number", false, false, false],
+        ["elasticModulus", "number", false, false, false],
+        ["density", "number", false, false, false],
+        ["exposureClass", "string", false, false, false],
+        ["fc0k", "number", false, false, false],
+        ["ft0k", "number", false, false, false],
+        ["fc90k", "number", false, false, false],
+        ["ft90k", "number", false, false, false]
+      ]
+    },
+    {
+      "label": "PreStressStrandType",
+      "canReference": false,
+      "fields": [
+        ["force", "number", false, false, false],
+        ["steelClass", "string", false, false, false],
+        ["steelDiameter", "number", false, false, false],
+        ["amount", "number", false, false, false],
+        ["date", "string", false, false, false],
+        ["location", "LocationType", false, false, false],
+        ["manufacturerId", "UserType", true, false, false]
+      ]
+    },
+    {
+      "label": "RebarEntry",
+      "canReference": false,
+      "fields": [
+        ["rebarDiameter", "number", false, false, false],
+        ["rebarAmount", "number", false, false, false]
+      ]
+    },
+    {
+      "label": "RebarType",
+      "canReference": true,
+      "fields": [
+        ["rebarMaterialId", "MaterialType", true, false, false],
+        ["rebarEntries", "RebarEntry", false, true, false]
+      ]
+    },
+    {
+      "label": "ReboundTestType",
+      "canReference": false,
+      "fields": [
+        ["reboundValue", "number", false, true, false],
+        ["reboundDate", "string", false, false, false],
+        ["userId", "UserType", true, false, false],
+        ["location", "LocationType", false, false, false]
+      ]
+    },
+    {
+      "label": "VisualInspectionType",
+      "canReference": false,
+      "fields": [
+        ["img", "string", false, false, false],
+        ["damageType", "string", false, false, false],
+        ["date", "string", false, false, false],
+        ["userId", "UserType", true, false, false],
+        ["location", "LocationType", false, false, false]
+      ]
+    }
+  ],
+  "enums": [
+    {
+      "label": "MaterialCategory",
+      "stringValues": ["Timber", "Concrete"]
+    },
+    {
+      "label": "VisualConditionCategory",
+      "stringValues": ["Good", "Fair", "Discard"]
+    },
+    {
+      "label": "UserCategory",
+      "stringValues": ["Admin", "Tester", "Manufacturer", "Buyer"]
+    },
+    {
+      "label": "ComponentCategory",
+      "stringValues": ["Column", "Slab"]
+    },
+    {
+      "label": "CrossSectionCategory",
+      "stringValues": ["Column", "Slab", "HollowCore"]
+    }
+  ]
+}
