@@ -1,25 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import './index.css';
-import { ComponentType, DatabaseType, helperMethod } from 'core';
-import { ExampleDataType, getGetMethodFrontendForEachReferencableType } from 'orm';
+import { helperMethod } from 'core';
 import { GenericRenderer } from './components/GenericRenderer';
+import { useModelStore } from './store/useModelStore';
 
 export const App: React.FC = () => {
-  const [component, setComponent] = useState<ComponentType | null>(null);
-
-  const getSomeRandomData = async () => {
-    const apicalls = getGetMethodFrontendForEachReferencableType<DatabaseType>(
-      ExampleDataType,
-      'http://localhost:5000'
-    );
-    try {
-      const component = await apicalls.components('0');
-      if (component) setComponent(component);
-    } catch {}
-  };
+  const data = useModelStore(s => s.data);
 
   useEffect(() => {
-    getSomeRandomData();
+    useModelStore.getState().getAllData()
   }, []);
 
   return (
@@ -27,7 +16,7 @@ export const App: React.FC = () => {
       <div>
         <span className="flex flex-row gap-2 p-2 text-black">{helperMethod('helper!')}</span>
         <div className="max-h-[85svh] overflow-y-scroll">else</div>
-        {component ? <GenericRenderer o={component} /> : null}
+        {data?.components ? <GenericRenderer o={data?.components ?? {missing: 'data'}} /> : null}
       </div>
     </div>
   );
