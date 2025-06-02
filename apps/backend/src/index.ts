@@ -1,5 +1,4 @@
-import { exampleData } from 'core/data/exampleData';
-import { type DatabaseType } from 'core/typeSheet';
+import { type DatabaseType, exampleData } from 'core';
 import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 import { ExampleDataType, registerRoutersOnApp } from 'orm';

@@ -1,4 +1,4 @@
-import { ComponentCategory, CrossSectionCategory, VisualConditionCategory, type DatabaseType } from 'core';
+import { ComponentCategory, CrossSectionCategory, VisualConditionCategory, type DatabaseType } from '../typeSheet';
 
 export const exampleData: DatabaseType = {
   buildings: [
