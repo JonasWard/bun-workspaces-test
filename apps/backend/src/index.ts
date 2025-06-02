@@ -3,7 +3,7 @@ import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 import { ExampleDataType, registerRoutersOnApp } from 'orm';
 
-const app = new Elysia().use(cors()).listen(5000);
+const app = new Elysia().use(cors()).listen(process.env.PORT || 5000);
 const clonedData = { ...exampleData };
 
 const registeredRouters = registerRoutersOnApp<DatabaseType>(app, ExampleDataType, clonedData);
