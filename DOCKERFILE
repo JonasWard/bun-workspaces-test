@@ -1,0 +1,25 @@
+
+# Stage 1: Build
+FROM oven/bun:1.1.0 as builder
+
+WORKDIR /app
+COPY . .
+
+# Install dependencies
+RUN bun install
+
+# Build frontend (if needed)
+WORKDIR /app/apps/web
+RUN bun run build
+
+# Stage 2: Run
+FROM oven/bun:1.1.0
+
+WORKDIR /app
+COPY --from=builder /app .
+
+# Set environment variables (can be overridden by Render)
+ENV NODE_ENV=production
+
+# Start both apps (adjust as needed)
+CMD bun run --cwd apps/backend start & bun run --cwd apps/web start
