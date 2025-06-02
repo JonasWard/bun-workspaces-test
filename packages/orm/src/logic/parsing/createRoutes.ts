@@ -85,21 +85,13 @@ const getFrontendApiEndPoint = (labelName: string, endpointMethod: keyof typeof 
 const fetchWrapper =
   <T>(backendUrl: string, method: keyof typeof apiEndPointHasId, labelName: string, id?: string) =>
   async (body?: string) => {
-    console.log(`${backendUrl}${getFrontendApiEndPoint(labelName, method)(id!)}`, {
-      method: apiEndPointMethod[method],
-      body,
-      headers: body
-        ? { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-        : { 'Access-Control-Allow-Origin': '*' }
-    });
-
     try {
       const response = await fetch(`${backendUrl}${getFrontendApiEndPoint(labelName, method)(id!)}`, {
         method: apiEndPointMethod[method],
-        body,
+        body: body ?? null,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
-      return response.json() as T;
+      return (await response.json()) as T;
     } catch (e) {
       console.log(e);
     }
@@ -108,7 +100,7 @@ const fetchWrapper =
 export const getGetMethodForEachReferencableType = <T extends DBType>(dataType: DataType): SingleOutputMethods<T> =>
   Object.fromEntries(
     getDataBaseType(dataType).fields.map(([labelName]) => [
-      labelName as any as keyof T,
+      labelName,
       (data, id) => data[labelName].find((p) => p._id === id)
     ])
   ) as SingleOutputMethods<T>;
@@ -119,34 +111,31 @@ export const getGetMethodFrontendForEachReferencableType = <T extends DBType>(
 ): SingleOutputMethodFrontend<T> =>
   Object.fromEntries(
     getDataBaseType(dataType).fields.map(([labelName]) => [
-      labelName as any as keyof T,
+      labelName,
       async (id: string) => await fetchWrapper(backendUrl, 'SingleOutput', labelName, id)()
     ])
   ) as SingleOutputMethodFrontend<T>;
 
 export const getGetBulkMethodForEachReferencableType = <T extends DBType>(dataType: DataType): BulkOutputMethods<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
-      labelName as unknown as keyof T,
-      (data: T) => data[labelName]
-    ])
+    getDataBaseType(dataType).fields.map(([labelName]) => [labelName, (data) => data[labelName]])
   ) as BulkOutputMethods<T>;
 
-export const getGetBulkUpdateMethodFrontendForEachReferencableType = <T extends DBType>(
+export const getGetBulkMethodFrontendForEachReferencableType = <T extends DBType>(
   dataType: DataType,
   backendUrl: string
 ): BulkOutputMethodFrontend<T> =>
   Object.fromEntries(
     getDataBaseType(dataType).fields.map(([labelName]) => [
-      labelName as any as keyof T,
-      async (ids: string[]) => await fetchWrapper(backendUrl, 'BulkOutput', labelName)(JSON.stringify({ ids }))
+      labelName,
+      async () => await fetchWrapper(backendUrl, 'BulkOutput', labelName)()
     ])
   ) as BulkOutputMethodFrontend<T>;
 
 export const getPostMethodsForEachReferencableType = <T extends DBType>(dataType: DataType): SingleUpdateMethods<T> =>
   Object.fromEntries(
     getDataBaseType(dataType).fields.map(([labelName]) => [
-      labelName as any as keyof T,
+      labelName,
       (data, id, dataToChange) => {
         const originalObjectIndex = data[labelName].findIndex((o) => o._id === id);
         if (originalObjectIndex !== -1) {
@@ -158,10 +147,22 @@ export const getPostMethodsForEachReferencableType = <T extends DBType>(dataType
     ])
   ) as SingleUpdateMethods<T>;
 
+export const getPostMethodsFrontendForEachReferencableType = <T extends DBType>(
+  dataType: DataType,
+  backendUrl: string
+): SingleUpdateMethodsFrontend<T> =>
+  Object.fromEntries(
+    getDataBaseType(dataType).fields.map(([labelName]) => [
+      labelName,
+      async (id, dataToChange) =>
+        await fetchWrapper(backendUrl, 'BulkOutput', labelName, id)(JSON.stringify({ dataToChange }))
+    ])
+  ) as SingleUpdateMethodsFrontend<T>;
+
 export const getPostBulkMethodsForEachReferencableType = <T extends DBType>(dataType: DataType): BulkUpdateMethods<T> =>
   Object.fromEntries(
     getDataBaseType(dataType).fields.map(([labelName]) => [
-      labelName as any as keyof T,
+      labelName,
       (data, ids, dataToChange) => {
         [...new Set(ids)]
           .map((id) => data[labelName].findIndex((o) => o._id === id))
@@ -174,10 +175,22 @@ export const getPostBulkMethodsForEachReferencableType = <T extends DBType>(data
     ])
   ) as BulkUpdateMethods<T>;
 
+export const getPostBulkMethodFrontendForEachReferencableType = <T extends DBType>(
+  dataType: DataType,
+  backendUrl: string
+): BulkUpdateMethodsFrontend<T> =>
+  Object.fromEntries(
+    getDataBaseType(dataType).fields.map(([labelName]) => [
+      labelName,
+      async (ids, dataToChange) =>
+        await fetchWrapper(backendUrl, 'BulkUpdate', labelName)(JSON.stringify({ ids, dataToChange }))
+    ])
+  ) as BulkUpdateMethodsFrontend<T>;
+
 export const getDeleteMethodsForEachReferencableType = <T extends DBType>(dataType: DataType): SingleDeleteMethods<T> =>
   Object.fromEntries(
     getDataBaseType(dataType).fields.map(([labelName]) => [
-      labelName as any as keyof T,
+      labelName,
       (data, id) => {
         const originalObjectIndex = data[labelName].findIndex((o) => o._id === id);
         if (originalObjectIndex !== -1) data[labelName].splice(originalObjectIndex, 1)[0];
@@ -192,6 +205,17 @@ export const getDeleteBulkRouteForEachReferencableType = <T extends DBType>(
   Object.fromEntries(
     getDataBaseType(dataType).fields.map(([labelName]) => [labelName as any as keyof T, `/${labelName}/delete-many`])
   ) as Record<keyof T, string>;
+
+export const getDeleteMethodsFrontendForEachReferencableType = <T extends DBType>(
+  dataType: DataType,
+  backendUrl: string
+): SingleDeleteMethodsFrontend<T> =>
+  Object.fromEntries(
+    getDataBaseType(dataType).fields.map(([labelName]) => [
+      labelName as any as keyof T,
+      async (id) => await fetchWrapper(backendUrl, 'SingleDelete', labelName, id)()
+    ])
+  ) as SingleDeleteMethodsFrontend<T>;
 
 export const getDeleteBulkMethodsForEachReferencableType = <T extends DBType>(
   dataType: DataType
@@ -210,8 +234,24 @@ export const getDeleteBulkMethodsForEachReferencableType = <T extends DBType>(
     ])
   ) as BulkDeleteMethods<T>;
 
-const debugWrap = (...v: any[]) => {
-  // v.map((s) => console.log(s));
+export const getDeleteBulkMethodFrontendForEachReferencableType = <T extends DBType>(
+  dataType: DataType,
+  backendUrl: string
+): BulkDeleteMethodsFrontend<T> =>
+  Object.fromEntries(
+    getDataBaseType(dataType).fields.map(([labelName]) => [
+      labelName as any as keyof T,
+      async (ids) => await fetchWrapper(backendUrl, 'BulkDelete', labelName)(JSON.stringify({ ids }))
+    ])
+  ) as BulkDeleteMethodsFrontend<T>;
+
+const debugWrapper = (...v: any[]) => {
+  console.log(
+    v
+      .map((e) => (Array.isArray(e) ? e.length : e))
+      .reverse()
+      .join(', ')
+  );
   return v[0];
 };
 
@@ -222,70 +262,44 @@ const debugWrap = (...v: any[]) => {
  * @param data - `DatabaseType`, actual content to look at
  * @return string json containing the defined routes
  */
-export const registerRoutersOnApp = <T extends DBType>(
-  app: any,
-  dataType: DataType,
-  data: T
-): Record<string, string[]> => {
-  const labels = getDatabaseFieltNames(dataType);
-
-  const routeObject = Object.fromEntries(labels.map((l) => [l, []])) as Record<string, string[]>;
-
-  labels.forEach((l) => {
-    const backendApiEndPoint = getBackendApiEndPoint(l, 'SingleOutput');
-    app.get(backendApiEndPoint, ({ params: { id } }: { params: { id: string } }) =>
-      debugWrap(getGetMethodForEachReferencableType<T>(dataType)[l](data, id), id, data[l])
+export const registerRoutersOnApp = <T extends DBType>(app: any, dataType: DataType, data: T) => {
+  Object.entries(getGetMethodForEachReferencableType<T>(dataType)).map(([l, method]) => {
+    const backendApiEndpoint = getBackendApiEndPoint(l, 'SingleOutput');
+    app.get(backendApiEndpoint, ({ params: { id } }: { params: { id: string } }) =>
+      debugWrapper(method(data, id), backendApiEndpoint)
     );
-    routeObject[l].push(`GET - ${backendApiEndPoint}`);
   });
 
-  labels.forEach((l) => {
-    const backendApiEndPoint = getBackendApiEndPoint(l, 'BulkOutput');
-    app.get(backendApiEndPoint, () =>
-      debugWrap(getGetBulkMethodForEachReferencableType<T>(dataType)[l](data), data[l])
-    );
-    routeObject[l].push(`GET - ${backendApiEndPoint}`);
+  Object.entries(getGetBulkMethodForEachReferencableType<T>(dataType)).map(([l, method]) => {
+    const backendApiEndpoint = getBackendApiEndPoint(l, 'BulkOutput');
+    app.get(backendApiEndpoint, () => debugWrapper(method(data), backendApiEndpoint));
   });
 
-  const PostMethods = getPostMethodsForEachReferencableType<T>(dataType);
-
-  labels.forEach((l) => {
-    const backendApiEndPoint = getBackendApiEndPoint(l, 'SingleUpdate');
-    app.post(backendApiEndPoint, ({ params: { id }, body }: { params: { id: string }; body: any }) =>
-      debugWrap(PostMethods[l](data, id, body), id, data[l])
+  Object.entries(getPostMethodsForEachReferencableType<T>(dataType)).map(([l, method]) => {
+    const backendApiEndpoint = getBackendApiEndPoint(l, 'SingleUpdate');
+    app.post(backendApiEndpoint, ({ params: { id }, body }: { params: { id: string }; body: any }) =>
+      debugWrapper(method(data, id, body), backendApiEndpoint)
     );
-    routeObject[l].push(`POST - ${backendApiEndPoint}`);
   });
 
-  const PostBulkMethods = getPostBulkMethodsForEachReferencableType<T>(dataType);
-
-  labels.forEach((l) => {
-    const backendApiEndPoint = getBackendApiEndPoint(l, 'BulkUpdate');
-    app.post(backendApiEndPoint, ({ body }: { body: { ids: string[]; dataToChange: any } }) =>
-      debugWrap(PostBulkMethods[l](data, body.ids, body.dataToChange), body.ids, data[l])
+  Object.entries(getPostBulkMethodsForEachReferencableType<T>(dataType)).map(([l, method]) => {
+    const backendApiEndpoint = getBackendApiEndPoint(l, 'BulkUpdate');
+    app.post(backendApiEndpoint, ({ body }: { body: { ids: string[]; dataToChange: any } }) =>
+      debugWrapper(method(data, body.ids, body.dataToChange), backendApiEndpoint)
     );
-    routeObject[l].push(`POST - ${backendApiEndPoint}`);
   });
 
-  const DeleteMethods = getDeleteMethodsForEachReferencableType<T>(dataType);
-
-  labels.forEach((l) => {
-    const backendApiEndPoint = getBackendApiEndPoint(l, 'SingleDelete');
-    app.delete(backendApiEndPoint, ({ params: { id } }: { params: { id: string } }) =>
-      debugWrap(DeleteMethods[l](data, id), id, data[l])
+  Object.entries(getDeleteMethodsForEachReferencableType<T>(dataType)).map(([l, method]) => {
+    const backendApiEndpoint = getBackendApiEndPoint(l, 'SingleDelete');
+    app.delete(backendApiEndpoint, ({ params: { id } }: { params: { id: string } }) =>
+      debugWrapper(method(data, id), backendApiEndpoint)
     );
-    routeObject[l].push(`DELETE - ${backendApiEndPoint}`);
   });
 
-  const DeleteBulkMethods = getDeleteBulkMethodsForEachReferencableType<T>(dataType);
-
-  labels.forEach((l) => {
-    const backendApiEndPoint = getBackendApiEndPoint(l, 'BulkDelete');
-    app.delete(backendApiEndPoint, ({ body }: { body: { ids: string[] } }) =>
-      debugWrap(DeleteBulkMethods[l](data, body.ids), body.ids, data[l])
+  Object.entries(getDeleteBulkMethodsForEachReferencableType<T>(dataType)).map(([l, method]) => {
+    const backendApiEndpoint = getBackendApiEndPoint(l, 'BulkDelete');
+    app.delete(backendApiEndpoint, ({ body }: { body: { ids: string[] } }) =>
+      debugWrapper(method(data, body.ids), backendApiEndpoint)
     );
-    routeObject[l].push(`DELETE - ${backendApiEndPoint}`);
   });
-
-  return routeObject;
 };
