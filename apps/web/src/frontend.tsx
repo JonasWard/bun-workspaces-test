@@ -6,11 +6,30 @@
  */
 
 import { createRoot } from "react-dom/client";
-import { App } from "./App";
+import { App } from './App';
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import { Missing } from './components/general/Missing';
+import './customising-styling.css';
+import { NestedDataForObjectRenderer } from './components/data/NestedDataForObjectRenderer';
+
+let router = createBrowserRouter([
+  {
+    path: '/',
+    Component: App
+  },
+  {
+    path: '*',
+    Component: Missing
+  },
+  {
+    path: '/:collectionName/:id',
+    Component: NestedDataForObjectRenderer
+  }
+]);
 
 function start() {
-  const root = createRoot(document.getElementById("root")!);
-  root.render(<App />);
+  const root = createRoot(document.getElementById('root')!);
+  root.render(<RouterProvider router={router} />);
 }
 
 if (document.readyState === "loading") {

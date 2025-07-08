@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+
+button {
+  background-color: var(--color-slate-600);
+  border-radius: 8px;
+  padding: 2px 8px;
+  width: fit-content;
+  color: var(--color-slate-200);
+  cursor: pointer;
+  filter: drop-shadow(var(--drop-shadow-xs));
+  transition: all 0.3s;
+}
+
+button:disabled {
+  background-color: var(--color-red-900);
+  color: var(--color-red-300);
+}
+
+button:hover:disabled {
+  background-color: var(--color-red-900);
+  color: var(--color-red-300);
+  filter: drop-shadow(var(--drop-shadow-xs));
+  cursor: not-allowed;
+}
+
+button:hover {
+  filter: drop-shadow(var(--drop-shadow-xl));
+  background-color: var(--color-slate-500);
+  color: var(--color-slate-50);
+}

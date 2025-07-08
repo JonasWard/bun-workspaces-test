@@ -15,13 +15,15 @@
     "orm": "workspace:*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-router": "^7.6.2",
     "tailwindcss": "^4.1.8",
     "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/react": "^19",
-    "@types/react-dom": "^19"
+    "@types/react-dom": "^19",
+    "@types/react-router": "^5.1.20"
   },
   "peerDependencies": {
     "typescript": "^5"
