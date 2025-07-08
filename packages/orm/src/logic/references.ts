@@ -1,6 +1,6 @@
 import { BaseObjectDefinitions } from './defaultOptions';
 import { getOccurenceCountForStringArray } from './helper/stringHelpers';
-import { DataType } from '@/types';
+import { DataType } from '../types';
 
 export const getValidReferenceTypes = (data: DataType) => {
   const includingDefaultTypes = [...BaseObjectDefinitions, ...data.types, ...data.enums];

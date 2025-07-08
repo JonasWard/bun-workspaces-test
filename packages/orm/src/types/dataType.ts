@@ -12,4 +12,15 @@ export type DataTypeV2 = {
   types: TypeDefinition[];
 };
 
-export type DataType = DataTypeV2;
+export type DataTypeV3 = {
+  version: 3;
+  enums: EnumDefinition[];
+  types: TypeDefinition[];
+  databaseTypeLocal: Record<string, Record<string, string>>;
+  databaseTypeView: Record<string, Record<string, string[]>>;
+};
+
+export type AllPreviousDataTypes = DataTypeV1 | DataTypeV2 | DataTypeV3;
+export type AllFromV2DataTypes = DataTypeV2 | DataTypeV3;
+
+export type DataType = DataTypeV3;

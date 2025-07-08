@@ -1,4 +1,5 @@
-import { DataType, FieldDefinition, TypeDefinition } from '@/types';
+import { ReservedStrings } from '../../enums';
+import { DataType, FieldDefinition, TypeDefinition } from '../../types';
 
 const forceCamelCase = (string: string): string =>
   string
@@ -17,7 +18,7 @@ const typeNameStripType = (typeName: string): string => {
   return typeName;
 };
 
-const getFieldNameFromType = (typeName: string) => typeNameStripType(forceCamelCase(typeName));
+export const getFieldNameFromType = (typeName: string) => typeNameStripType(forceCamelCase(typeName));
 
 const getFieldDefinitionFromReferencableType = (def: TypeDefinition): FieldDefinition => [
   getFieldNameFromType(def.label),
@@ -32,10 +33,10 @@ export const getDatabaseFieltNames = (data: DataType) =>
 
 /**
  * All the elements that are referencable, should be stored in a database. The type representing this data is called the `DatabaseType`
- * @param data
+ * @param dataType - DataType definition
  */
-export const getDataBaseType = (data: DataType): TypeDefinition => ({
-  label: 'DatabaseType',
-  fields: data.types.filter((t) => t.canReference).map(getFieldDefinitionFromReferencableType),
+export const getDatabaseType = (dataType: DataType): TypeDefinition => ({
+  label: ReservedStrings.DatabaseType,
+  fields: dataType.types.filter((t) => t.canReference).map(getFieldDefinitionFromReferencableType),
   canReference: false
 });

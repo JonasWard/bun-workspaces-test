@@ -6,3 +6,5 @@ export * from './fieldDefinition';
 export * from './nestedLabel';
 export * from './typeDefinition';
 export * from './validationType';
+export * from './dbType';
+export * from './dataGraphTypes';

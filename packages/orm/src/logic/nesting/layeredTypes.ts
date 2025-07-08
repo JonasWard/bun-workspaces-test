@@ -1,11 +1,11 @@
-import { FieldBaseType, DataType, FieldDefinition, NestedLabelMap, NestedLabelType } from '@/types';
-import { getDataBaseType } from '../parsing';
+import { FieldBaseType, DataType, FieldDefinition, NestedLabelMap, NestedLabelType } from '../../types';
+import { getDatabaseType } from '../parsing';
 import { getFieldsWithReferencableForType } from '../defaultOptions';
 
 export const PLACEHOLDER_TYPE_STRING = '_internalTypeName';
 
-const isSpecialType = (type: string) => !Object.values(FieldBaseType).includes(type as FieldBaseType);
-const isEnum = (type: string, data: DataType) => Boolean(data.enums.find(({ label }) => label === type));
+export const isSpecialType = (type: string) => !Object.values(FieldBaseType).includes(type as FieldBaseType);
+export const isEnum = (type: string, data: DataType) => Boolean(data.enums.find(({ label }) => label === type));
 
 const getFieldMapFromFields = (fields: FieldDefinition[], data: DataType) =>
   Object.fromEntries(fields.map(([fieldName, type]) => [fieldName, isEnum(type, data) ? 'enum' : type]));
@@ -36,7 +36,7 @@ const getNestedLabelType = (
     : type;
 
 export const getLayeredTypes = (type: string, data: DataType): NestedLabelType => {
-  const dataWithDatabaseType = { ...data, types: [...data.types, getDataBaseType(data)] };
+  const dataWithDatabaseType = { ...data, types: [...data.types, getDatabaseType(data)] };
   const typeMap = getMappedObject(dataWithDatabaseType);
   return constructNestedLabelType(typeMap, type, []);
 };

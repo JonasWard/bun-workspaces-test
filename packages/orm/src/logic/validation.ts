@@ -1,9 +1,17 @@
-import { TypeDefinition } from '@/types/typeDefinition';
-import { ValidationFieldMap, ValidationObjectMap, ValidationStates } from '@/types/validationType';
+import { TypeDefinition } from '../types/typeDefinition';
+import { ValidationFieldMap, ValidationObjectMap, ValidationStates } from '../types/validationType';
 import { getOccurenceCountForStringArray, isCamelCase, isPascalCase } from './helper/stringHelpers';
-import { FieldDefinition } from '@/types/fieldDefinition';
-import { DataType } from '@/types/dataType';
-import { EnumDefinition } from '@/types/enumObject';
+import { FieldDefinition } from '../types/fieldDefinition';
+import {
+  AllFromV2DataTypes,
+  AllPreviousDataTypes,
+  DataType,
+  DataTypeV1,
+  DataTypeV2,
+  DataTypeV3
+} from '../types/dataType';
+import { EnumDefinition } from '../types/enumObject';
+import { getLocalisationMapForFields } from './localisation/localisationForFields';
 
 export const getStringValidationStateForEnumDefinition = (e: EnumDefinition): ValidationFieldMap => {
   // checking out whether all the fields are unique
@@ -66,7 +74,7 @@ const parseFieldsFromJsonObject = (jsonObject: object): FieldDefinition[] => {
   return array.map(parseFieldFromJsonObject);
 };
 
-const parseObjectAsObjectDefinition = (jsonObject: object): TypeDefinition => {
+const parseObjectAsTypeDefinition = (jsonObject: object): TypeDefinition => {
   if (typeof (jsonObject as TypeDefinition).label !== 'string') throw new Error('label missing or wrongly formatted');
   if (typeof (jsonObject as TypeDefinition).canReference !== 'boolean')
     throw new Error('canReference flag is missing or wrongly formatted');
@@ -89,16 +97,23 @@ const parseEnumFromJsonObject = (jsonObject: object): EnumDefinition => {
   };
 };
 
-export const parseJSONAsObjectsAndEnums = (jsonObject: object): DataType => {
-  if (typeof (jsonObject as DataType)?.enums !== 'object' || !Array.isArray((jsonObject as DataType).enums))
-    throw new Error('enums definition is missing or wrongly formatted');
-  if (typeof (jsonObject as DataType)?.types !== 'object' || !Array.isArray((jsonObject as DataType).types))
-    throw new Error('types definition is missing or wrongly formatted');
-  if ((jsonObject as DataType)?.version !== 2) console.warn('version type is not matching the definition');
+const parseVersion1ToVersion2 = (dataTypeV1: DataTypeV1): DataTypeV2 => ({ ...dataTypeV1, version: 2 });
+const parseVersion2ToVersion3 = (dataTypeV1: DataTypeV2): DataTypeV3 =>
+  getLocalisationMapForFields({
+    enums: dataTypeV1.enums.map(parseEnumFromJsonObject),
+    types: dataTypeV1.types.map(parseObjectAsTypeDefinition),
+    version: 3,
+    databaseTypeLocal: {},
+    databaseTypeView: {}
+  });
 
-  return {
-    version: 2,
-    types: Array(...(jsonObject as DataType).types).map(parseObjectAsObjectDefinition),
-    enums: Array(...(jsonObject as DataType).enums).map(parseEnumFromJsonObject)
-  };
+export const parseJSONAsObjectsAndEnums = (jsonObject: object): DataType => {
+  if (typeof (jsonObject as AllPreviousDataTypes)?.enums !== 'object' || !Array.isArray((jsonObject as DataType).enums))
+    throw new Error('enums definition is missing or wrongly formatted');
+  if (typeof (jsonObject as AllPreviousDataTypes)?.types !== 'object' || !Array.isArray((jsonObject as DataType).types))
+    throw new Error('types definition is missing or wrongly formatted');
+  if (!(jsonObject as AllFromV2DataTypes)?.version)
+    return parseVersion2ToVersion3(parseVersion1ToVersion2(jsonObject as DataTypeV1));
+  if ((jsonObject as AllFromV2DataTypes)?.version === 2) return parseVersion2ToVersion3(jsonObject as DataTypeV2);
+  return jsonObject as DataType;
 };

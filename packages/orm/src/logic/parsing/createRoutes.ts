@@ -1,7 +1,7 @@
-import { DataType } from '@/types';
-import { getDatabaseFieltNames, getDataBaseType } from './databaseType';
+import { DataType } from '../../types';
+import { getDatabaseType } from './databaseType';
+import { DBType } from '../../types/dbType';
 
-type DBType = Record<string, (Object & { _id: string })[]>;
 type SingleOutputMethods<T extends DBType> = {
   [K in keyof T]: (data: T, id: string) => T[K][0] | undefined;
 };
@@ -99,7 +99,7 @@ const fetchWrapper =
 
 export const getGetMethodForEachReferencableType = <T extends DBType>(dataType: DataType): SingleOutputMethods<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
+    getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName,
       (data, id) => data[labelName].find((p) => p._id === id)
     ])
@@ -110,7 +110,7 @@ export const getGetMethodFrontendForEachReferencableType = <T extends DBType>(
   backendUrl: string
 ): SingleOutputMethodFrontend<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
+    getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName,
       async (id: string) => await fetchWrapper(backendUrl, 'SingleOutput', labelName, id)()
     ])
@@ -118,7 +118,7 @@ export const getGetMethodFrontendForEachReferencableType = <T extends DBType>(
 
 export const getGetBulkMethodForEachReferencableType = <T extends DBType>(dataType: DataType): BulkOutputMethods<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [labelName, (data) => data[labelName]])
+    getDatabaseType(dataType).fields.map(([labelName]) => [labelName, (data) => data[labelName]])
   ) as BulkOutputMethods<T>;
 
 export const getGetBulkMethodFrontendForEachReferencableType = <T extends DBType>(
@@ -126,7 +126,7 @@ export const getGetBulkMethodFrontendForEachReferencableType = <T extends DBType
   backendUrl: string
 ): BulkOutputMethodFrontend<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
+    getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName,
       async () => await fetchWrapper(backendUrl, 'BulkOutput', labelName)()
     ])
@@ -134,7 +134,7 @@ export const getGetBulkMethodFrontendForEachReferencableType = <T extends DBType
 
 export const getPostMethodsForEachReferencableType = <T extends DBType>(dataType: DataType): SingleUpdateMethods<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
+    getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName,
       (data, id, dataToChange) => {
         const originalObjectIndex = data[labelName].findIndex((o) => o._id === id);
@@ -152,7 +152,7 @@ export const getPostMethodsFrontendForEachReferencableType = <T extends DBType>(
   backendUrl: string
 ): SingleUpdateMethodsFrontend<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
+    getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName,
       async (id, dataToChange) =>
         await fetchWrapper(backendUrl, 'BulkOutput', labelName, id)(JSON.stringify({ dataToChange }))
@@ -161,7 +161,7 @@ export const getPostMethodsFrontendForEachReferencableType = <T extends DBType>(
 
 export const getPostBulkMethodsForEachReferencableType = <T extends DBType>(dataType: DataType): BulkUpdateMethods<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
+    getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName,
       (data, ids, dataToChange) => {
         [...new Set(ids)]
@@ -180,7 +180,7 @@ export const getPostBulkMethodFrontendForEachReferencableType = <T extends DBTyp
   backendUrl: string
 ): BulkUpdateMethodsFrontend<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
+    getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName,
       async (ids, dataToChange) =>
         await fetchWrapper(backendUrl, 'BulkUpdate', labelName)(JSON.stringify({ ids, dataToChange }))
@@ -189,7 +189,7 @@ export const getPostBulkMethodFrontendForEachReferencableType = <T extends DBTyp
 
 export const getDeleteMethodsForEachReferencableType = <T extends DBType>(dataType: DataType): SingleDeleteMethods<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
+    getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName,
       (data, id) => {
         const originalObjectIndex = data[labelName].findIndex((o) => o._id === id);
@@ -199,11 +199,9 @@ export const getDeleteMethodsForEachReferencableType = <T extends DBType>(dataTy
     ])
   ) as SingleDeleteMethods<T>;
 
-export const getDeleteBulkRouteForEachReferencableType = <T extends DBType>(
-  dataType: DataType
-): Record<keyof T, string> =>
+export const getDeleteBulkRouteForEachReferencableType = <T extends DBType>(dataType: DataType): Record<keyof T, string> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [labelName as any as keyof T, `/${labelName}/delete-many`])
+    getDatabaseType(dataType).fields.map(([labelName]) => [labelName as any as keyof T, `/${labelName}/delete-many`])
   ) as Record<keyof T, string>;
 
 export const getDeleteMethodsFrontendForEachReferencableType = <T extends DBType>(
@@ -211,17 +209,15 @@ export const getDeleteMethodsFrontendForEachReferencableType = <T extends DBType
   backendUrl: string
 ): SingleDeleteMethodsFrontend<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
+    getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName as any as keyof T,
       async (id) => await fetchWrapper(backendUrl, 'SingleDelete', labelName, id)()
     ])
   ) as SingleDeleteMethodsFrontend<T>;
 
-export const getDeleteBulkMethodsForEachReferencableType = <T extends DBType>(
-  dataType: DataType
-): BulkDeleteMethods<T> =>
+export const getDeleteBulkMethodsForEachReferencableType = <T extends DBType>(dataType: DataType): BulkDeleteMethods<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
+    getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName as any as keyof T,
       (data, ids) =>
         [...new Set(ids)]
@@ -239,7 +235,7 @@ export const getDeleteBulkMethodFrontendForEachReferencableType = <T extends DBT
   backendUrl: string
 ): BulkDeleteMethodsFrontend<T> =>
   Object.fromEntries(
-    getDataBaseType(dataType).fields.map(([labelName]) => [
+    getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName as any as keyof T,
       async (ids) => await fetchWrapper(backendUrl, 'BulkDelete', labelName)(JSON.stringify({ ids }))
     ])
