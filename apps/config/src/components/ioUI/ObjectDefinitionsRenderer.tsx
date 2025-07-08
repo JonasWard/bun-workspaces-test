@@ -5,9 +5,19 @@ export const ObjectDefinitionsRenderer: React.FC<{
   objects: TypeDefinition[];
   updateObjects: (newObjects: TypeDefinition[]) => void;
   validReferenceTypes: (TypeDefinition | EnumDefinition)[];
-  setLabelInFocus: (label: string) => void;
+  setTypeLabelInFocus: (label: string) => void;
+  setViewLabelInFocus: (label: string) => void;
+  setLocalLabelInFocus: (label: string) => void;
   labelInFocus: string;
-}> = ({ objects, updateObjects, validReferenceTypes, setLabelInFocus, labelInFocus }) => {
+}> = ({
+  objects,
+  updateObjects,
+  validReferenceTypes,
+  setTypeLabelInFocus,
+  setViewLabelInFocus,
+  setLocalLabelInFocus,
+  labelInFocus
+}) => {
   const objectValidationStates = getObjectValidationStateForObjectDefinitions(objects);
 
   return (
@@ -21,7 +31,9 @@ export const ObjectDefinitionsRenderer: React.FC<{
             key={i}
             validReferenceTypes={validReferenceTypes}
             objectValidationStates={objectValidationStates}
-            setLabelInFocus={setLabelInFocus}
+            setTypeLabelInFocus={setTypeLabelInFocus}
+            setViewLabelInFocus={setViewLabelInFocus}
+            setLocalLabelInFocus={setLocalLabelInFocus}
             labelInFocus={labelInFocus}
           />
         ))}

@@ -15,7 +15,9 @@ export const RenderObject: React.FC<{
   deleteObject: () => void;
   validReferenceTypes: (TypeDefinition | EnumDefinition)[];
   objectValidationStates: ValidationObjectMap;
-  setLabelInFocus: (label: string) => void;
+  setTypeLabelInFocus: (label: string) => void;
+  setViewLabelInFocus: (label: string) => void;
+  setLocalLabelInFocus: (label: string) => void;
   labelInFocus: string;
 }> = ({
   o,
@@ -23,7 +25,9 @@ export const RenderObject: React.FC<{
   deleteObject,
   validReferenceTypes,
   objectValidationStates,
-  setLabelInFocus,
+  setTypeLabelInFocus,
+  setViewLabelInFocus,
+  setLocalLabelInFocus,
   labelInFocus
 }) => {
   const fieldValidationStates = getFieldValidationStateForObjectDefinition(o);
@@ -37,7 +41,7 @@ export const RenderObject: React.FC<{
   return (
     <div className="flex flex-col gap-2 rounded-lg p-2 object-state w-160">
       <div
-        className={`grid gap-1 grid-cols-[3fr_1fr_auto_25px] p-1 rounded-lg object-state ${
+        className={`grid gap-1 grid-cols-[4fr_3fr_2fr_auto] gap-4 p-1 rounded-lg object-state ${
           objectValidationStates[o.label]
         }`}
       >
@@ -57,9 +61,29 @@ export const RenderObject: React.FC<{
         >
           - del
         </button>
-        <button ref={divRef} onClick={() => setLabelInFocus(o.label)}>
-          🎧
-        </button>
+        <span className="flex flex-row gap-2">
+          <button
+            className="bg-[#fbf0df] text-[#1a1a1a] py-1.5 px-3 rounded-lg font-bold text-sm min-w-[0px] appearance-none cursor-pointer hover:bg-[#f3d5a3] transition-colors duration-100"
+            ref={divRef}
+            onClick={() => setTypeLabelInFocus(o.label)}
+          >
+            T
+          </button>
+          <button
+            className="bg-[#fbf0df] text-[#1a1a1a] py-1.5 px-3 rounded-lg font-bold text-sm min-w-[0px] appearance-none cursor-pointer hover:bg-[#f3d5a3] transition-colors duration-100"
+            ref={divRef}
+            onClick={() => setViewLabelInFocus(o.label)}
+          >
+            👀
+          </button>
+          <button
+            className="bg-[#fbf0df] text-[#1a1a1a] py-1.5 px-3 rounded-lg font-bold text-sm min-w-[0px] appearance-none cursor-pointer hover:bg-[#f3d5a3] transition-colors duration-100"
+            ref={divRef}
+            onClick={() => setLocalLabelInFocus(o.label)}
+          >
+            📖
+          </button>
+        </span>
       </div>
       <div className="grid gap-1 grid-cols-[1fr_auto_60px]">
         {o.fields.map((field, i) => (

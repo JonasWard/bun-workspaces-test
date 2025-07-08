@@ -1,4 +1,19 @@
-import { FieldDefinition, TypeDefinition, EnumDefinition, ValidationFieldMap } from 'orm';
+import {
+  FieldDefinition,
+  TypeDefinition,
+  EnumDefinition,
+  ValidationFieldMap,
+  isFieldOptional,
+  getFieldLabelName,
+  getFieldType,
+  isFieldArray,
+  isFieldReference,
+  getUpdatedIsFieldReference,
+  getUpdatedIsFieldArray,
+  getUpdatedIsFieldOptional,
+  getUpdatedFieldLabelName,
+  getUpdatedFieldType
+} from 'orm';
 import { TextInput } from './TextInput';
 
 export const FieldRenderer: React.FC<{
@@ -10,27 +25,29 @@ export const FieldRenderer: React.FC<{
 }> = ({ field, updateField, deleteField, validReferenceTypes, fieldValidationStates }) => (
   <>
     <TextInput
-      className={`bg-stone-100 rounded-lg p-1 field-state ${fieldValidationStates[field[0]]}`}
-      stateValue={field[0]}
-      onChange={(v) => updateField([v, field[1], field[2], field[3], field[4]])}
+      className={`bg-stone-100 rounded-lg p-1 field-state ${fieldValidationStates[getFieldLabelName(field)]}`}
+      stateValue={getFieldLabelName(field)}
+      onChange={(v) => updateField(getUpdatedFieldLabelName(field, v))}
     />
     <span
       className={`bg-stone-100 rounded-lg p-1 flex flex-row  w-full justify-between field-state ${
-        validReferenceTypes.find(({ label }) => field[1] === label) ? fieldValidationStates[field[0]] : 'typeMissing'
+        validReferenceTypes.find(({ label }) => getFieldType(field) === label)
+          ? fieldValidationStates[getFieldLabelName(field)]
+          : 'typeMissing'
       }`}
     >
       <select
-        value={field[1]}
+        value={getFieldType(field)}
         onChange={(v) =>
-          updateField([
-            field[0],
-            v.target.value,
-            (validReferenceTypes.find((o) => o.label === v.target.value) as TypeDefinition | undefined)?.canReference
-              ? field[2]
-              : false,
-            field[3],
-            field[4]
-          ])
+          updateField(
+            getUpdatedFieldType(
+              field,
+              v.target.value,
+              (validReferenceTypes.find((o) => o.label === v.target.value) as TypeDefinition | undefined)?.canReference
+                ? isFieldReference(field)
+                : false
+            )
+          )
         }
       >
         {validReferenceTypes.map((o) => (
@@ -40,26 +57,28 @@ export const FieldRenderer: React.FC<{
       <span className="p-1 flex flex-row gap-1">
         <input
           type="checkbox"
-          checked={field[2]}
+          checked={isFieldReference(field)}
           disabled={
-            !(validReferenceTypes.find((o) => o.label === field[1]) as TypeDefinition | undefined)?.canReference
+            !(validReferenceTypes.find((o) => o.label === getFieldType(field)) as TypeDefinition | undefined)
+              ?.canReference
           }
           id="isReference"
           onChange={() =>
-            updateField([
-              field[0],
-              field[1],
-              (validReferenceTypes.find((o) => o.label === field[1]) as TypeDefinition | undefined)?.canReference
-                ? !field[2]
-                : false,
-              field[3],
-              field[4]
-            ])
+            updateField(
+              getUpdatedIsFieldReference(
+                field,
+                (validReferenceTypes.find((o) => o.label === getFieldType(field)) as TypeDefinition | undefined)
+                  ?.canReference
+                  ? !isFieldReference(field)
+                  : false
+              )
+            )
           }
         />
         <span
           className={
-            (validReferenceTypes.find((o) => o.label === field[1]) as TypeDefinition | undefined)?.canReference
+            (validReferenceTypes.find((o) => o.label === getFieldType(field)) as TypeDefinition | undefined)
+              ?.canReference
               ? ''
               : 'text-[#7a7a7a]'
           }
@@ -70,18 +89,18 @@ export const FieldRenderer: React.FC<{
       <span className="p-1 flex flex-row gap-1">
         <input
           type="checkbox"
-          checked={field[3]}
+          checked={isFieldArray(field)}
           id="isReference"
-          onChange={() => updateField([field[0], field[1], field[2], !field[3], field[4]])}
+          onChange={() => updateField(getUpdatedIsFieldArray(field, !isFieldArray(field)))}
         />
         <span>[]</span>
       </span>
       <span className="p-1 flex flex-row gap-1">
         <input
           type="checkbox"
-          checked={field[4]}
+          checked={isFieldOptional(field)}
           id="isReference"
-          onChange={() => updateField([field[0], field[1], field[2], field[3], !field[4]])}
+          onChange={() => updateField(getUpdatedIsFieldOptional(field, !isFieldOptional(field)))}
         />
         <span>?</span>
       </span>
