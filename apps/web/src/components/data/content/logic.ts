@@ -1,5 +1,5 @@
 import { DatabaseType } from 'core';
-import { ExampleDataType, getShortLabelName, NestedReferences, ObjectType } from 'orm';
+import { ExampleDataType, getShortLabelName, NestedReferences } from 'orm';
 
 export const getValueForNestedReference = (
   nestedReference: NestedReferences<DatabaseType>,

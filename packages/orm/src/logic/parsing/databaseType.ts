@@ -1,4 +1,4 @@
-import { ReservedStrings } from '../../enums';
+import { DATABASE_TYPE_S } from '@/enums';
 import { DataType, FieldDefinition, TypeDefinition } from '../../types';
 
 const forceCamelCase = (string: string): string =>
@@ -36,7 +36,7 @@ export const getDatabaseFieltNames = (data: DataType) =>
  * @param dataType - DataType definition
  */
 export const getDatabaseType = (dataType: DataType): TypeDefinition => ({
-  label: ReservedStrings.DatabaseType,
+  label: DATABASE_TYPE_S,
   fields: dataType.types.filter((t) => t.canReference).map(getFieldDefinitionFromReferencableType),
   canReference: false
 });

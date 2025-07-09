@@ -1,7 +1,7 @@
-import { TypeDefinition } from '../types/typeDefinition';
-import { ValidationFieldMap, ValidationObjectMap, ValidationStates } from '../types/validationType';
-import { getOccurenceCountForStringArray, isCamelCase, isPascalCase } from './helper/stringHelpers';
-import { FieldDefinition } from '../types/fieldDefinition';
+import { TypeDefinition } from '../../types/typeDefinition';
+import { ValidationFieldMap, ValidationObjectMap, ValidationStateType } from '../../types/validationType';
+import { getOccurenceCountForStringArray, isCamelCase, isPascalCase } from '../helper/stringHelpers';
+import { FieldDefinition } from '../../types/fieldDefinition';
 import {
   AllFromV2DataTypes,
   AllPreviousDataTypes,
@@ -9,9 +9,13 @@ import {
   DataTypeV1,
   DataTypeV2,
   DataTypeV3
-} from '../types/dataType';
-import { EnumDefinition } from '../types/enumObject';
-import { getLocalisationMapForFields } from './localisation/localisationForFields';
+} from '../../types/dataType';
+import { EnumDefinition } from '../../types/enumObject';
+import { getLocalisationMapForFields } from '../localisation/localisationForFields';
+import { getFieldLabelValidationState } from './fieldDefinition';
+
+const getTypeLabelValidation = (label: string): ValidationStateType[] =>
+  isPascalCase.test(label) ? ['normal'] : ['formattingIssue'];
 
 export const getStringValidationStateForEnumDefinition = (e: EnumDefinition): ValidationFieldMap => {
   // checking out whether all the fields are unique
@@ -19,26 +23,20 @@ export const getStringValidationStateForEnumDefinition = (e: EnumDefinition): Va
   return Object.fromEntries(
     Object.entries(fieldLabelOccurenceMap).map(([label, value]) => [
       label,
-      value === 1
-        ? isCamelCase.test(label)
-          ? ValidationStates.normal
-          : ValidationStates.formattingIssue
-        : ValidationStates.duplicate
+      value !== 1 ? ['duplicate', ...getFieldLabelValidationState(label)] : getFieldLabelValidationState(label)
     ])
   );
 };
 
 export const getFieldValidationStateForObjectDefinition = (o: TypeDefinition): ValidationFieldMap => {
+  console.log('getFieldValidationStateForObjectDefinition', o);
+
   // checking out whether all the fields are unique
   const fieldLabelOccurenceMap = getOccurenceCountForStringArray(o.fields.map(([label]) => label));
   return Object.fromEntries(
     Object.entries(fieldLabelOccurenceMap).map(([label, value]) => [
       label,
-      value === 1
-        ? isCamelCase.test(label)
-          ? ValidationStates.normal
-          : ValidationStates.formattingIssue
-        : ValidationStates.duplicate
+      value !== 1 ? ['duplicate', ...getFieldLabelValidationState(label)] : getFieldLabelValidationState(label)
     ])
   );
 };
@@ -48,11 +46,7 @@ export const getObjectValidationStateForObjectDefinitions = (os: TypeDefinition[
   return Object.fromEntries(
     Object.entries(fieldLabelOccurenceMap).map(([label, value]) => [
       label,
-      value === 1
-        ? isPascalCase.test(label)
-          ? ValidationStates.normal
-          : ValidationStates.formattingIssue
-        : ValidationStates.duplicate
+      value !== 1 ? ['duplicate', ...getTypeLabelValidation(label)] : getTypeLabelValidation(label)
     ])
   );
 };

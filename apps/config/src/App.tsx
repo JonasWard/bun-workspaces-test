@@ -3,13 +3,14 @@ import { useEffect, useState } from 'react';
 import { LoadJSON } from './components/ioUI/LoadJSON';
 import { SaveJSON } from './components/ioUI/SaveJSON';
 import { TypeRenderer } from './components/visualisation/TypeRenderer';
-import { DataType, ExampleDataType, getValidReferenceTypes } from 'orm';
+import { DATABASE_TYPE_S, DataType, ExampleDataType, getValidReferenceTypes } from 'orm';
 import { EnumDefinitionsRenderer } from './components/ioUI/EnumDefinitionsRenderer';
 import { ObjectDefinitionsRenderer } from './components/ioUI/ObjectDefinitionsRenderer';
 import { DownloadTypeSheet } from './components/ioUI/DownloadTypeSheet';
 import { EditViewsForType } from './components/ioUI/views/EditViewsForType';
 import { EditLocalisationSheet } from './components/ioUI/localisation/EditLocalisationSheet';
 import { DownloadTypeMap } from './components/ioUI/DownloadTypeMap';
+import { DownloadSpringBootBackend } from './components/ioUI/DownloadSpringBootBackend';
 
 export const App = () => {
   const [data, setData] = useState<DataType>(ExampleDataType);
@@ -65,7 +66,7 @@ export const App = () => {
           ) : null}
           <button
             className="bg-[#fbf0df] text-[#1a1a1a] py-1.5 px-3 rounded-lg font-bold text-sm min-w-[0px] appearance-none cursor-pointer hover:bg-[#f3d5a3] transition-colors duration-100"
-            onClick={() => upsertTypeLabel('DatabaseType')}
+            onClick={() => upsertTypeLabel(DATABASE_TYPE_S)}
           >
             view DatabaseType
           </button>
@@ -75,6 +76,7 @@ export const App = () => {
           </span>
           <DownloadTypeSheet data={data} />
           <DownloadTypeMap data={data} />
+          <DownloadSpringBootBackend data={data} />
         </span>
       </div>
       <div

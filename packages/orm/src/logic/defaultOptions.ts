@@ -1,5 +1,12 @@
-import { ReservedStrings } from '..';
-import { FieldBaseType, TypeDefinition, FieldDefinition, EnumDefinition, DataType } from '../types';
+import { DATABASE_TYPE_S, ID_S, TYPE_S } from '@/enums';
+import {
+  FieldBaseType,
+  TypeDefinition,
+  FieldDefinition,
+  FieldDefinitionReserved,
+  EnumDefinition,
+  DataType
+} from '../types';
 
 const StringObject = { label: FieldBaseType.string, fields: [], canReference: false };
 const NumberObject = { label: FieldBaseType.number, fields: [], canReference: false };
@@ -24,11 +31,11 @@ export const DefaultBaseObjectDefinitions: DataType = {
   databaseTypeView: {}
 };
 
-const getTypeName = (t: TypeDefinition): FieldDefinition => [ReservedStrings.Type, `'${t.label}'`, false, false, false];
-const getIdDefinition = (): FieldDefinition => [ReservedStrings.Id, 'string', false, false, false];
+const getTypeName = (t: TypeDefinition): FieldDefinitionReserved => [TYPE_S, `'${t.label}'`, false, false, false];
+const getIdDefinition = (): FieldDefinitionReserved => [ID_S, 'string', false, false, false];
 
 export const getFieldsWithReferencableForType = (typeDef: TypeDefinition): FieldDefinition[] => [
   ...(typeDef.canReference ? [getIdDefinition()] : []),
-  ...(typeDef.label !== ReservedStrings.DatabaseType ? [getTypeName(typeDef)] : []),
+  ...(typeDef.label !== DATABASE_TYPE_S ? [getTypeName(typeDef)] : []),
   ...typeDef.fields
 ];

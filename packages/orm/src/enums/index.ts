@@ -1,1 +1,1 @@
-export * from './ReservedStrings';
+export * from './reservedStrings';

@@ -12,7 +12,8 @@ import {
   getUpdatedIsFieldArray,
   getUpdatedIsFieldOptional,
   getUpdatedFieldLabelName,
-  getUpdatedFieldType
+  getUpdatedFieldType,
+  getRenderclassForValidationState
 } from 'orm';
 import { TextInput } from './TextInput';
 
@@ -25,16 +26,18 @@ export const FieldRenderer: React.FC<{
 }> = ({ field, updateField, deleteField, validReferenceTypes, fieldValidationStates }) => (
   <>
     <TextInput
-      className={`bg-stone-100 rounded-lg p-1 field-state ${fieldValidationStates[getFieldLabelName(field)]}`}
+      className={`bg-stone-100 rounded-lg p-1 field-state ${getRenderclassForValidationState(
+        fieldValidationStates[getFieldLabelName(field)]
+      )}`}
       stateValue={getFieldLabelName(field)}
       onChange={(v) => updateField(getUpdatedFieldLabelName(field, v))}
     />
     <span
-      className={`bg-stone-100 rounded-lg p-1 flex flex-row  w-full justify-between field-state ${
+      className={`bg-stone-100 rounded-lg p-1 flex flex-row  w-full justify-between field-state ${getRenderclassForValidationState(
         validReferenceTypes.find(({ label }) => getFieldType(field) === label)
           ? fieldValidationStates[getFieldLabelName(field)]
-          : 'typeMissing'
-      }`}
+          : ['typeMissing', ...fieldValidationStates[getFieldLabelName(field)]]
+      )}`}
     >
       <select
         value={getFieldType(field)}
