@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: backend
+    env: node
+    buildCommand: bun install
+    startCommand: bun run start
+    rootDir: apps/backend
+
+  - type: static
+    name: web
+    buildCommand: bun install && bun run build
+    staticPublishPath: dist
+    rootDir: apps/web
