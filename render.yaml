@@ -1,15 +1,16 @@
 services:
   - type: web
     name: backend
-    env: node
+    runtime: node
     rootDir: apps/backend
     buildCommand: bun install
     startCommand: bun run start
-    autoDeploy: true
+    autoDeployTrigger: commit
 
-  - type: static_site
+  - type: web
     name: web
+    runtime: static
     rootDir: apps/web
     buildCommand: bun install && bun run build
     staticPublishPath: dist
-    autoDeploy: true
+    autoDeployTrigger: commit
