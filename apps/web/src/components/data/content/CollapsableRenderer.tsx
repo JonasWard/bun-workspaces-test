@@ -1,6 +1,6 @@
 import { useModelStore } from '@/store/useModelStore';
 import { DatabaseType, UnionType } from 'core';
-import { ExampleDataType, getMappingObjectForDataDefinition, ReservedStrings } from 'orm';
+import { ExampleDataType, getMappingObjectForDataDefinition, ReservedStrings, ReservedStringsArray } from 'orm';
 import { useMemo } from 'react';
 import { MissingObject } from './MissingObject';
 
@@ -16,7 +16,7 @@ const EntryRenderer: React.FC<{ fieldName: string; content: ContentType; oType: 
   content,
   oType
 }) => {
-  if (Object.values(ReservedStrings).includes(fieldName as ReservedStrings)) return null;
+  if (ReservedStringsArray.includes(fieldName as ReservedStrings)) return null;
   else if (typeof content === 'object')
     return (
       <>
@@ -49,7 +49,7 @@ const EntryRenderer: React.FC<{ fieldName: string; content: ContentType; oType: 
 export const GenericRenderer: React.FC<{ o: UnionType }> = ({ o }) => (
   <div className="grid grid-cols-[120px_auto] gap-2 p-2 bg-zinc-200">
     {Object.entries(o).map(([fieldLabel, content]) => {
-      if (Object.values(ReservedStrings).includes(fieldLabel as ReservedStrings)) return null;
+      if (ReservedStringsArray.includes(fieldLabel as ReservedStrings)) return null;
       else if (dataMap[o.type] && dataMap[o.type][fieldLabel])
         return <CollapsableRenderer collectionName={dataMap[o.type][fieldLabel]} id={content} />;
       return <EntryRenderer fieldName={fieldLabel} content={content} oType={o.type} />;
