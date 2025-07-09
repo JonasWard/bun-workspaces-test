@@ -2,12 +2,14 @@ services:
   - type: web
     name: backend
     env: node
+    rootDir: apps/backend
     buildCommand: bun install
     startCommand: bun run start
-    rootDir: apps/backend
+    autoDeploy: true
 
-  - type: static
+  - type: static_site
     name: web
+    rootDir: apps/web
     buildCommand: bun install && bun run build
     staticPublishPath: dist
-    rootDir: apps/web
+    autoDeploy: true
