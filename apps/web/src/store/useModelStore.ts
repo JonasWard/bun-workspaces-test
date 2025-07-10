@@ -6,12 +6,11 @@ import {
   getGetBulkMethodFrontendForEachReferencableType,
   getPostBulkMethodFrontendForEachReferencableType
 } from 'orm';
+import { BACKEND_URL } from '@/config/config';
 
-export const backendUrl = 'http://localhost:5000';
-
-const AllGetMethods = getGetBulkMethodFrontendForEachReferencableType(ExampleDataType, backendUrl);
-const AllPostMethods = getPostBulkMethodFrontendForEachReferencableType(ExampleDataType, backendUrl);
-const AllDeleteMethods = getDeleteBulkMethodFrontendForEachReferencableType(ExampleDataType, backendUrl);
+const AllGetMethods = getGetBulkMethodFrontendForEachReferencableType(ExampleDataType, BACKEND_URL);
+const AllPostMethods = getPostBulkMethodFrontendForEachReferencableType(ExampleDataType, BACKEND_URL);
+const AllDeleteMethods = getDeleteBulkMethodFrontendForEachReferencableType(ExampleDataType, BACKEND_URL);
 
 type ModelStoreType = {
   data: DatabaseType;
