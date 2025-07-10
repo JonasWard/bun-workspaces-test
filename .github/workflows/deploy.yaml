@@ -27,9 +27,8 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build Web App
+      - name: Build App
         run: |
-          cd apps/web
           bun run build
         working-directory: ${{ github.workspace }}
 
@@ -38,12 +37,6 @@ jobs:
         with:
           name: web-dist
           path: apps/web/dist
-
-      - name: Build Backend App
-        run: |
-          cd apps/backend
-          bun run build
-        working-directory: ${{ github.workspace }}
 
       - name: Save Backend Artifacts
         uses: actions/upload-artifact@v4
@@ -55,15 +48,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: web-dist
-          path: web-dist-copy
+          path: web-dist
 
       - name: Deploy Web Artifacts to web branch
         run: |
           git checkout --orphan web
           git rm -rf . > /dev/null 2>&1 || true
 
-          cp -r web-dist-copy/* .
-          rm -rf web-dist-copy
+          cp -r web-dist/* .
+          rm -rf web-dist
 
           touch .nojekyll
 
@@ -75,27 +68,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: backend-dist
-          path: backend-dist-copy
+          path: backend-dist
 
       - name: Deploy Backend Artifacts to backend branch
         run: |
           git checkout --orphan backend
           git rm -rf . > /dev/null 2>&1 || true
 
-          cp -r backend-dist-copy/* .
-          rm -rf backend-dist-copy
+          cp -r backend-dist/* .
+          rm -rf backend-dist
 
           git add --all
           git commit -m "Deploy Backend"
           git push -f origin backend
 
-      - name: Clean all folders in web branch before deploy
-        run: |
-          git checkout web
-          git rm -rf . > /dev/null 2>&1 || true
-          git clean -fdx -f
-
-          touch .nojekyll
-          git add --all
-          git commit -m "Deploy Web clean"
-          git push -f origin web
