@@ -29,32 +29,33 @@ jobs:
 
       - name: Deploy Web Artifacts to web branch
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-
+           - name: Deploy Web Artifacts to web branch
+        run: |
+          # Paths
           BUILD_DIR=apps/web/dist
+          TEMP_DEPLOY_DIR=web-deploy
 
-          # Make sure build folder exists
+          # Make sure build was successful
           if [ ! -d "$BUILD_DIR" ]; then
-            echo "Build directory not found!"
+            echo "Web build directory not found at $BUILD_DIR"
             exit 1
           fi
 
-          # Save the current directory as a safe working space
-          mkdir tmp-deploy
-          cp -r $BUILD_DIR/* tmp-deploy/
+          # Copy build artifacts to a temp folder outside git context
+          mkdir $TEMP_DEPLOY_DIR
+          cp -r $BUILD_DIR/* $TEMP_DEPLOY_DIR/
 
-          # Switch to orphan branch and clean it
-          git switch --orphan web
-          git rm -rf .
+          # Clean working directory and switch orphan branch
+          git checkout --orphan web
+          git rm -rf . > /dev/null 2>&1 || true
 
-          # Copy build files into root
-          cp -r tmp-deploy/* .
-          rm -rf tmp-deploy
+          # Move build files into place
+          cp -r $TEMP_DEPLOY_DIR/* .
+          rm -rf $TEMP_DEPLOY_DIR
 
           touch .nojekyll  # Optional for GitHub Pages
 
-          git add .
+          git add --all
           git commit -m "Deploy Web"
           git push -f origin web
 
@@ -65,11 +66,23 @@ jobs:
 
       - name: Deploy Backend Artifacts to backend branch
         run: |
-          git switch --orphan backend
-          git rm -rf .
+          BUILD_DIR=apps/backend/dist
+          TEMP_DEPLOY_DIR=backend-deploy
 
-          cp -r apps/backend/dist/* .
+          if [ ! -d "$BUILD_DIR" ]; then
+            echo "Backend build directory not found at $BUILD_DIR"
+            exit 1
+          fi
 
-          git add .
+          mkdir $TEMP_DEPLOY_DIR
+          cp -r $BUILD_DIR/* $TEMP_DEPLOY_DIR/
+
+          git checkout --orphan backend
+          git rm -rf . > /dev/null 2>&1 || true
+
+          cp -r $TEMP_DEPLOY_DIR/* .
+          rm -rf $TEMP_DEPLOY_DIR
+
+          git add --all
           git commit -m "Deploy Backend"
           git push -f origin backend
