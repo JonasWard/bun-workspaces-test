@@ -7,12 +7,12 @@
 
 import { createRoot } from "react-dom/client";
 import { App } from './App';
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createHashRouter, RouterProvider } from 'react-router';
 import { Missing } from './components/general/Missing';
 import './customising-styling.css';
 import { NestedDataForObjectRenderer } from './components/data/NestedDataForObjectRenderer';
 
-let router = createBrowserRouter([
+let router = createHashRouter([
   {
     path: '/',
     Component: App
