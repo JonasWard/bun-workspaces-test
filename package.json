@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -n 'backend,web' -c '#fcba03,#9e0f0d' 'cd apps/backend && bun dev' 'cd apps/web && bun --bun run dev' ",
+    "start": "concurrently -n 'backend,web' -c '#fcba03,#9e0f0d' 'cd apps/backend && bun run start' 'cd apps/web && bun --bun run start' ",
     "dev:web": "concurrently -n 'web' -c '#9e0f0d' 'cd apps/web && bun --bun run dev'",
     "dev:backend": "concurrently -n 'backend' -c '#fcba03' 'cd apps/backend && bun --bun run dev'",
     "dev:config": "concurrently -n 'config' -c '#3ecf0e' 'cd apps/config && bun --bun run dev'",

@@ -4,8 +4,7 @@
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "build": "bun build src/index.ts --outdir ./dist --minify",
-    "dev:dist": "bun run --watch dist/index.js",
-    "start": "NODE_ENV=production bun src/index.ts"
+    "start": "NODE_ENV=production bun dist/index.js"
   },
   "dependencies": {
     "@elysiajs/cors": "^1.3.3",

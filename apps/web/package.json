@@ -2,11 +2,9 @@
   "name": "web",
   "private": true,
   "type": "module",
-  "main": "src/index.tsx",
-  "module": "src/index.tsx",
   "scripts": {
-    "dev": "bun --hot src/index.tsx",
-    "start": "NODE_ENV=production bun src/index.tsx",
+    "dev": "bun --hot src/index.html",
+    "start": "NODE_ENV=production bun dist/index.html",
     "build": "bun run build.ts"
   },
   "dependencies": {
