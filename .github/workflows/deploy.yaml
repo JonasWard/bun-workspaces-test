@@ -44,6 +44,24 @@ jobs:
           name: backend-dist
           path: apps/backend/dist
 
+      - name: Download Backend Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-dist
+          path: backend-dist
+
+      - name: Deploy Backend Artifacts to backend branch
+        run: |
+          git checkout --orphan backend
+          git rm -rf . > /dev/null 2>&1 || true
+
+          cp -r backend-dist/* .
+          rm -rf backend-dist
+
+          git add --all
+          git commit -m "Deploy Backend"
+          git push -f origin backend
+
       - name: Download Web Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -63,22 +81,4 @@ jobs:
           git add --all
           git commit -m "Deploy Web"
           git push -f origin web
-
-      - name: Download Backend Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: backend-dist
-          path: backend-dist
-
-      - name: Deploy Backend Artifacts to backend branch
-        run: |
-          git checkout --orphan backend
-          git rm -rf . > /dev/null 2>&1 || true
-
-          cp -r backend-dist/* .
-          rm -rf backend-dist
-
-          git add --all
-          git commit -m "Deploy Backend"
-          git push -f origin backend
 
