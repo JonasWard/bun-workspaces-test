@@ -95,9 +95,6 @@ jobs:
           git rm -rf . > /dev/null 2>&1 || true
           git clean -fdx -f
 
-          cp -r web-dist-copy/* .
-          rm -rf web-dist-copy
-
           touch .nojekyll
           git add --all
           git commit -m "Deploy Web clean"
