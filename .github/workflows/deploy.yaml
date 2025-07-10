@@ -32,11 +32,27 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
+          BUILD_DIR=apps/web/dist
+
+          # Make sure build folder exists
+          if [ ! -d "$BUILD_DIR" ]; then
+            echo "Build directory not found!"
+            exit 1
+          fi
+
+          # Save the current directory as a safe working space
+          mkdir tmp-deploy
+          cp -r $BUILD_DIR/* tmp-deploy/
+
+          # Switch to orphan branch and clean it
           git switch --orphan web
           git rm -rf .
 
-          cp -r apps/web/dist/* .
-          touch .nojekyll
+          # Copy build files into root
+          cp -r tmp-deploy/* .
+          rm -rf tmp-deploy
+
+          touch .nojekyll  # Optional for GitHub Pages
 
           git add .
           git commit -m "Deploy Web"
