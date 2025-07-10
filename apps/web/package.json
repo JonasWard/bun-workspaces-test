@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "bun --hot src/index.html",
-    "start": "NODE_ENV=production bun dist/index.html",
-    "build": "bun run build.ts"
+    "start": "NODE_ENV=production bun ./dist/index.html",
+    "build": "bun --bun run build.ts"
   },
   "dependencies": {
     "bun-plugin-tailwind": "^0.0.15",
