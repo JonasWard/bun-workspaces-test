@@ -44,6 +44,14 @@ jobs:
           name: backend-dist
           path: apps/backend/dist
 
+      - name: Make a stupid empty branch and do nothing except for make sure everything else is not poluted
+        run: |
+          git checkout --orphan stupid-branch
+          git rm -rf . > /dev/null 2>&1 || true
+
+          git add --all
+          git commit -m "stupid-branch init"
+
       - name: Download Backend Artifacts
         uses: actions/download-artifact@v4
         with:
