@@ -29,8 +29,6 @@ jobs:
 
       - name: Deploy Web Artifacts to web branch
         run: |
-           - name: Deploy Web Artifacts to web branch
-        run: |
           # Paths
           BUILD_DIR=apps/web/dist
           TEMP_DEPLOY_DIR=web-deploy
