@@ -1,0 +1,59 @@
+name: Build and Deploy Web & Backend
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to push to other branches
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build Web App
+        run: |
+          cd apps/web
+          bun run build
+        env:
+          NODE_ENV: production
+
+      - name: Deploy Web Artifacts to web branch
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          git switch --orphan web
+          git rm -rf .
+
+          cp -r apps/web/dist/* .
+          touch .nojekyll
+
+          git add .
+          git commit -m "Deploy Web"
+          git push -f origin web
+
+      - name: Build Backend
+        run: |
+          cd apps/backend
+          bun run build
+
+      - name: Deploy Backend Artifacts to backend branch
+        run: |
+          git switch --orphan backend
+          git rm -rf .
+
+          cp -r apps/backend/dist/* .
+
+          git add .
+          git commit -m "Deploy Backend"
+          git push -f origin backend
