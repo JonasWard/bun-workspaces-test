@@ -74,7 +74,7 @@ const apiEndPointCore = (labelName: string, endpointMethod: keyof typeof apiEndP
   }
 };
 
-const getBackendApiEndPoint = (labelName: string, endpointMethod: keyof typeof apiEndPointHasId) =>
+export const getBackendApiEndPoint = (labelName: string, endpointMethod: keyof typeof apiEndPointHasId) =>
   apiEndPointCore(labelName, endpointMethod) + (apiEndPointHasId[endpointMethod] ? '/:id' : '');
 
 const getFrontendApiEndPoint = (labelName: string, endpointMethod: keyof typeof apiEndPointHasId) =>
@@ -258,7 +258,7 @@ const debugWrapper = (...v: any[]) => {
  * @param data - `DatabaseType`, actual content to look at
  * @return string json containing the defined routes
  */
-export const registerRoutersOnApp = <T extends DBType>(app: any, dataType: DataType, data: T) => {
+export const registerRoutersOnAppForDummyData = <T extends DBType>(app: Elysia, dataType: DataType, data: T) => {
   Object.entries(getGetMethodForEachReferencableType<T>(dataType)).map(([l, method]) => {
     const backendApiEndpoint = getBackendApiEndPoint(l, 'SingleOutput');
     app.get(backendApiEndpoint, ({ params: { id } }: { params: { id: string } }) =>
