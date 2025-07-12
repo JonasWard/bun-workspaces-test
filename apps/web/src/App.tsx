@@ -10,8 +10,6 @@ const objectsToRender = getRenderAndUpdateGraphForReferencableDataType<DatabaseT
 export const App: React.FC = () => {
   const data = useModelStore(s => s.data);
 
-  console.log(data);
-
   useEffect(() => {
     useModelStore.getState().getAllData()
   }, []);
