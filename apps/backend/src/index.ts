@@ -7,9 +7,10 @@ import { registerRoutersOnAppForMongoDB } from './mongo/createMongoCalls';
 
 const db = await connectToDatabase();
 
-const app = new Elysia()
-  .use(cors())
-  .use(
+const app = new Elysia().use(cors()).listen(process.env.PORT || 5000);
+
+if (process.env.SWAGGER === 'true')
+  app.use(
     swagger({
       path: '/swagger', // endpoint which swagger will appear on
       documentation: {
@@ -19,8 +20,7 @@ const app = new Elysia()
         }
       }
     })
-  )
-  .listen(process.env.PORT || 5000);
+  );
 
 registerRoutersOnAppForMongoDB(app as any, ExampleDataType, db);
 
