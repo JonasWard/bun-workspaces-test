@@ -6,7 +6,7 @@ import {
   getGetBulkMethodFrontendForEachReferencableType,
   getPostBulkMethodFrontendForEachReferencableType
 } from 'orm';
-import { BACKEND_URL } from '@/config/config';
+import { BACKEND_URL } from '../config/config';
 
 const AllGetMethods = getGetBulkMethodFrontendForEachReferencableType(ExampleDataType, BACKEND_URL);
 const AllPostMethods = getPostBulkMethodFrontendForEachReferencableType(ExampleDataType, BACKEND_URL);
@@ -14,6 +14,8 @@ const AllDeleteMethods = getDeleteBulkMethodFrontendForEachReferencableType(Exam
 
 type ModelStoreType = {
   data: DatabaseType;
+  loaded: boolean;
+  loadedCollections: (keyof DatabaseType)[];
   getData: (collectionName: keyof DatabaseType) => Promise<void>;
   updateData: <T extends keyof DatabaseType>(
     collection: T,
@@ -26,6 +28,8 @@ type ModelStoreType = {
 
 export const useModelStore = create<ModelStoreType>((set) => ({
   data: {} as DatabaseType,
+  loaded: false,
+  loadedCollections: [],
   getData: async (collection) => {
     const collectionData = await AllGetMethods[collection]();
     set((s) => ({ data: { ...s.data, [collection]: collectionData } }));
@@ -50,8 +54,16 @@ export const useModelStore = create<ModelStoreType>((set) => ({
   },
   getAllData: async () => {
     const data = {} as DatabaseType;
-    for (const [labelName, getMethod] of Object.entries(AllGetMethods))
-      data[labelName as keyof DatabaseType] = (await getMethod()) as any;
-    set(() => ({ data }));
+    try {
+      for (const [labelName, getMethod] of Object.entries(AllGetMethods)) {
+        data[labelName as keyof DatabaseType] = (await getMethod()) as any;
+        set((s) => ({ loadedCollections: [...s.loadedCollections, labelName as keyof DatabaseType] }));
+      }
+      set(() => ({ data }));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      set(() => ({ loaded: true }));
+    }
   }
 }));
