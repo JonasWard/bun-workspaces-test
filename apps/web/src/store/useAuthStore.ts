@@ -28,17 +28,9 @@ export const useAuthStore = create<AuthStoreType>()(
       checkAuth: async () => {
         set({ isLoading: true });
         try {
-          console.log('=== CHECK AUTH DEBUG ===');
-          console.log('Document cookies before request:', document.cookie);
-          console.log('Making request to:', `${BACKEND_URL}/app-user/me`);
-
           const response = await fetch(`${BACKEND_URL}/app-user/me`, {
             credentials: 'include'
           });
-
-          console.log('Auth check response status:', response.status);
-          console.log('Auth check response headers:', Object.fromEntries(response.headers.entries()));
-          console.log('=== END CHECK AUTH DEBUG ===');
 
           if (response.ok) {
             const userData = await response.json();
@@ -47,7 +39,6 @@ export const useAuthStore = create<AuthStoreType>()(
             set({ user: null });
           }
         } catch (error) {
-          console.log('Auth check error:', error);
           set({ user: null });
         } finally {
           set({ isLoading: false });
