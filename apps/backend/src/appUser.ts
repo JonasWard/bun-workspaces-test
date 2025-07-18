@@ -26,16 +26,8 @@ export const registerAppUser = (app: Elysia, db: Db) => {
     .use(cookie())
     .derive(({ request }) => {
       const cookieHeader = request.headers.get('cookie') ?? '';
-      console.log('=== COOKIE DEBUG ===');
-      console.log('Request URL:', request.url);
-      console.log('Request Origin:', request.headers.get('origin'));
-      console.log('Raw cookie header:', cookieHeader);
-      console.log('All headers:', Object.fromEntries(request.headers.entries()));
 
-      if (!cookieHeader) {
-        console.log('No cookies found in request');
-        return { cookies: {} };
-      }
+      if (!cookieHeader) return { cookies: {} };
 
       const cookies = Object.fromEntries(
         cookieHeader.split('; ').map((c) => {
@@ -43,8 +35,6 @@ export const registerAppUser = (app: Elysia, db: Db) => {
           return [key, v.join('=')];
         })
       );
-      console.log('Parsed cookies:', cookies);
-      console.log('=== END COOKIE DEBUG ===');
       return { cookies };
     })
     // Auth middleware: find session in MongoDB

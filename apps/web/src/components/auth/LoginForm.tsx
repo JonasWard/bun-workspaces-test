@@ -21,13 +21,6 @@ export const LoginForm: React.FC = () => {
 
       const data = await response.json();
 
-      console.log('=== LOGIN RESPONSE DEBUG ===');
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-      console.log('Set-Cookie header:', response.headers.get('set-cookie'));
-      console.log('Document cookies after login:', document.cookie);
-      console.log('=== END LOGIN DEBUG ===');
-
       if (response.ok) {
         setUser(data);
         message.success('Login successful!');
