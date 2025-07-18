@@ -53,4 +53,11 @@ if (process.env.NO_DATABASE === 'true') {
   console.log('registered Boilerplate endpoints');
 }
 
+console.log('Production cookie settings:', {
+  NODE_ENV: process.env.NODE_ENV,
+  COOKIE_SAME_SITE: process.env.COOKIE_SAME_SITE,
+  COOKIE_DOMAIN: process.env.COOKIE_DOMAIN,
+  FRONT_END: process.env.FRONT_END
+});
+
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
