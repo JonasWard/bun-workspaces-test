@@ -4,6 +4,7 @@ import { Db } from 'mongodb';
 import { cookie } from '@elysiajs/cookie';
 
 const APP_USER_COLLECTION = 'appUsers';
+const APP_SESSION_COLLECTION = 'appSessions';
 
 export type AppUser = {
   _id: string;
@@ -15,8 +16,8 @@ export type AppUser = {
 export type AppSession = {
   _id: string;
   userID: string;
-  createdAt: string;
-  expiresAt: string;
+  createdAt: Date;
+  expiresAt: Date;
 };
 
 export const registerAppUser = (app: Elysia, db: Db) =>
@@ -38,8 +39,11 @@ export const registerAppUser = (app: Elysia, db: Db) =>
       const sessionId = cookies['session_id'];
       if (!sessionId) return { user: null };
 
-      const session = await db.collection(APP_USER_COLLECTION).findOne({ _id: sessionId } as any);
-      if (session && new Date(session.expiresAt) >= new Date()) return { user: session.userId };
+      const session = await db.collection(APP_SESSION_COLLECTION).findOne({ _id: sessionId } as any);
+      if (session && new Date(session.expiresAt) >= new Date()) {
+        const user = await db.collection(APP_USER_COLLECTION).findOne({ _id: session.userID } as any);
+        return { user: user ? { id: user._id, username: user.username, email: user.email } : null };
+      }
       return { user: null };
     })
     .group('/app-user', (app) =>
@@ -75,7 +79,9 @@ export const registerAppUser = (app: Elysia, db: Db) =>
                 };
 
                 const emailSearchResult = await db.collection(APP_USER_COLLECTION).findOne({ email: body.email });
-                const usernameSearchResult = await db.collection(APP_USER_COLLECTION).findOne({ email: body.username });
+                const usernameSearchResult = await db
+                  .collection(APP_USER_COLLECTION)
+                  .findOne({ username: body.username });
 
                 if (emailSearchResult || usernameSearchResult) {
                   set.status = 500;
@@ -127,11 +133,11 @@ export const registerAppUser = (app: Elysia, db: Db) =>
 
                 const newSessionData: Omit<AppSession, '_id'> = {
                   userID: result._id,
-                  createdAt: new Date().toString(),
-                  expiresAt: new Date(Date.now() + 100 * 24 * 60 * 60 * 1000).toString() // 100 days
+                  createdAt: new Date(),
+                  expiresAt: new Date(Date.now() + 100 * 24 * 60 * 60 * 1000) // 100 days
                 };
 
-                const inserted = await db.collection(APP_USER_COLLECTION).insertOne(newSessionData);
+                const inserted = await db.collection(APP_SESSION_COLLECTION).insertOne(newSessionData);
 
                 set.headers[
                   'Set-Cookie'
@@ -150,14 +156,23 @@ export const registerAppUser = (app: Elysia, db: Db) =>
         .post('/logout', async ({ cookies, set }) => {
           const sessionId = cookies['session_id'];
           try {
-            await db.collection(APP_USER_COLLECTION).deleteOne({ _id: sessionId });
+            await db.collection(APP_SESSION_COLLECTION).deleteOne({ _id: sessionId });
 
             set.headers['Set-Cookie'] = 'session_id=; Max-Age=0; Path=/; HttpOnly';
 
             return { success: true };
           } catch (e) {
             console.log(e);
+            set.status = 500;
+            return { success: false, message: 'Logout failed' };
           }
+        })
+        .get('/me', async ({ user, set }) => {
+          if (!user) {
+            set.status = 401;
+            return { message: 'Not authenticated' };
+          }
+          return user;
         })
         .put('/update', () => {})
     );

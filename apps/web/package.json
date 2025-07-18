@@ -8,6 +8,7 @@
     "build": "bun --bun run build.ts"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
     "antd": "^5.26.5",
     "bun-plugin-tailwind": "^0.0.15",
     "core": "workspace:*",
