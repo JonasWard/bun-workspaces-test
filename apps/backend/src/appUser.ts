@@ -131,7 +131,7 @@ export const registerAppUser = (app: Elysia, db: Db) => {
               })
             },
             (app) =>
-              app.post('/login', async ({ body, set, request }) => {
+              app.post('/login', async ({ body, set }) => {
                 try {
                   const loginInformation = {
                     username: body.username,
@@ -160,21 +160,14 @@ export const registerAppUser = (app: Elysia, db: Db) => {
 
                   const isProduction = process.env.NODE_ENV === 'production';
 
-                  // Configure cookies for cross-origin deployment
+                  // More permissive cookie settings for production deployment
                   let cookieValue = `session_id=${inserted.insertedId}; HttpOnly; Path=/`;
 
                   if (isProduction) {
-                    // For cross-origin requests, we need SameSite=None and Secure
-                    // But only if we're on HTTPS
-                    const isHttps =
-                      request.headers.get('x-forwarded-proto') === 'https' || request.url.startsWith('https://');
-
-                    if (isHttps) {
-                      cookieValue += `; Secure; SameSite=None`;
-                    } else {
-                      // If not HTTPS, use Lax (less secure but works)
-                      cookieValue += `; SameSite=Lax`;
-                    }
+                    // In production, use Secure but with SameSite=None for cross-origin requests
+                    // or SameSite=Lax for same-site requests
+                    const sameSite = process.env.COOKIE_SAME_SITE || 'Lax';
+                    cookieValue += `; Secure; SameSite=${sameSite}`;
 
                     // Add domain if specified in environment
                     if (process.env.COOKIE_DOMAIN) {
