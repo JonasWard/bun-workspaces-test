@@ -10,8 +10,10 @@ type User = {
 
 type AuthStoreType = {
   user: null | User;
+  sessionId: string | null;
   isLoading: boolean;
   setUser: (u: User) => void;
+  setSessionId: (sessionId: string) => void;
   clearUser: () => void;
   setLoading: (loading: boolean) => void;
   checkAuth: () => Promise<void>;
@@ -21,9 +23,11 @@ export const useAuthStore = create<AuthStoreType>()(
   persist(
     (set, get) => ({
       user: null,
+      sessionId: null,
       isLoading: false,
       setUser: (user) => set(() => ({ user })),
-      clearUser: () => set(() => ({ user: null })),
+      setSessionId: (sessionId) => set(() => ({ sessionId })),
+      clearUser: () => set(() => ({ user: null, sessionId: null })),
       setLoading: (isLoading) => set(() => ({ isLoading })),
       checkAuth: async () => {
         set({ isLoading: true });
@@ -32,8 +36,19 @@ export const useAuthStore = create<AuthStoreType>()(
           console.log('Document cookies before request:', document.cookie);
           console.log('Making request to:', `${BACKEND_URL}/app-user/me`);
 
+          const { sessionId } = get();
+          console.log('Stored sessionId:', sessionId);
+
+          // Prepare headers with Authorization fallback
+          const headers: HeadersInit = {};
+          if (sessionId) {
+            headers['Authorization'] = `Bearer ${sessionId}`;
+            console.log('Adding Authorization header with sessionId');
+          }
+
           const response = await fetch(`${BACKEND_URL}/app-user/me`, {
-            credentials: 'include'
+            credentials: 'include',
+            headers
           });
 
           console.log('Auth check response status:', response.status);
@@ -44,11 +59,11 @@ export const useAuthStore = create<AuthStoreType>()(
             const userData = await response.json();
             set({ user: userData });
           } else {
-            set({ user: null });
+            set({ user: null, sessionId: null });
           }
         } catch (error) {
           console.log('Auth check error:', error);
-          set({ user: null });
+          set({ user: null, sessionId: null });
         } finally {
           set({ isLoading: false });
         }
@@ -56,7 +71,7 @@ export const useAuthStore = create<AuthStoreType>()(
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({ user: state.user })
+      partialize: (state) => ({ user: state.user, sessionId: state.sessionId })
     }
   )
 );

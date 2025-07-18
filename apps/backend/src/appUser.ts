@@ -47,11 +47,25 @@ export const registerAppUser = (app: Elysia, db: Db) => {
       console.log('=== END COOKIE DEBUG ===');
       return { cookies };
     })
-    // Auth middleware: find session in MongoDB
-    .derive(async ({ cookies }) => {
-      const sessionId = cookies['session_id'];
-      console.log('sessionId:' + sessionId);
-      if (!sessionId) return { user: null };
+    // Auth middleware: find session in MongoDB (check both cookies and headers)
+    .derive(async ({ cookies, request }) => {
+      // Try to get session ID from cookie first
+      let sessionId = cookies['session_id'];
+      console.log('sessionId from cookie:' + sessionId);
+
+      // If no cookie, try Authorization header as fallback
+      if (!sessionId) {
+        const authHeader = request.headers.get('authorization');
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+          sessionId = authHeader.substring(7);
+          console.log('sessionId from header:' + sessionId);
+        }
+      }
+
+      if (!sessionId) {
+        console.log('No session ID found in cookies or headers');
+        return { user: null };
+      }
 
       const session = await db.collection(APP_SESSION_COLLECTION).findOne({ _id: new ObjectId(sessionId) } as any);
       console.log('session found:' + JSON.stringify(session, null, 2));
@@ -170,7 +184,11 @@ export const registerAppUser = (app: Elysia, db: Db) => {
                       request.headers.get('x-forwarded-proto') === 'https' || request.url.startsWith('https://');
 
                     if (isHttps) {
+                      // Try multiple cookie strategies for cross-origin
                       cookieValue += `; Secure; SameSite=None`;
+
+                      // Set the main cookie first
+                      set.headers['Set-Cookie'] = cookieValue;
                     } else {
                       // If not HTTPS, use Lax (less secure but works)
                       cookieValue += `; SameSite=Lax`;
@@ -185,6 +203,7 @@ export const registerAppUser = (app: Elysia, db: Db) => {
                   }
 
                   console.log('Setting cookie:', cookieValue);
+                  console.log('Request headers during login:', Object.fromEntries(request.headers.entries()));
                   set.headers['Set-Cookie'] = cookieValue;
 
                   return { username: result.username, email: result.email };

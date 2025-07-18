@@ -86,11 +86,35 @@ const fetchWrapper =
   <T>(backendUrl: string, method: keyof typeof apiEndPointHasId, labelName: string, id?: string) =>
   async (body?: string) => {
     try {
+      // Get session ID from localStorage as fallback for cross-origin requests
+      const authStorage = localStorage.getItem('auth-storage');
+      let sessionId = null;
+      if (authStorage) {
+        try {
+          const parsed = JSON.parse(authStorage);
+          sessionId = parsed.state?.sessionId;
+        } catch (e) {
+          console.log('Failed to parse auth storage:', e);
+        }
+      }
+
+      // Prepare headers
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      // Add Authorization header if we have a session ID
+      if (sessionId) {
+        headers['Authorization'] = `Bearer ${sessionId}`;
+        console.log('Adding Authorization header to API request');
+      }
+
       const response = await fetch(`${backendUrl}${getFrontendApiEndPoint(labelName, method)(id!)}`, {
         method: apiEndPointMethod[method],
         body: body ?? null,
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        headers
       });
       return (await response.json()) as T;
     } catch (e) {
