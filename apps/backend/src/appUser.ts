@@ -148,7 +148,24 @@ export const registerAppUser = (app: Elysia, db: Db) => {
 
                   const inserted = await db.collection(APP_SESSION_COLLECTION).insertOne(newSessionData);
 
-                  const cookieValue = `session_id=${inserted.insertedId}; HttpOnly; Secure; Path=/; SameSite=Lax`;
+                  const isProduction = process.env.NODE_ENV === 'production';
+
+                  // More permissive cookie settings for production deployment
+                  let cookieValue = `session_id=${inserted.insertedId}; HttpOnly; Path=/`;
+
+                  if (isProduction) {
+                    // In production, use Secure but with SameSite=None for cross-origin requests
+                    // or SameSite=Lax for same-site requests
+                    const sameSite = process.env.COOKIE_SAME_SITE || 'Lax';
+                    cookieValue += `; Secure; SameSite=${sameSite}`;
+
+                    // Add domain if specified in environment
+                    if (process.env.COOKIE_DOMAIN) {
+                      cookieValue += `; Domain=${process.env.COOKIE_DOMAIN}`;
+                    }
+                  } else {
+                    cookieValue += '; SameSite=Lax';
+                  }
 
                   console.log('Setting cookie:', cookieValue);
                   set.headers['Set-Cookie'] = cookieValue;
