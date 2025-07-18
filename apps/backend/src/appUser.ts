@@ -148,10 +148,7 @@ export const registerAppUser = (app: Elysia, db: Db) => {
 
                   const inserted = await db.collection(APP_SESSION_COLLECTION).insertOne(newSessionData);
 
-                  const isProduction = process.env.NODE_ENV === 'production';
-                  const cookieValue = `session_id=${inserted.insertedId}; HttpOnly; ${
-                    isProduction ? 'Secure;' : ''
-                  } Path=/; SameSite=${isProduction ? 'Strict' : 'Lax'}`;
+                  const cookieValue = `session_id=${inserted.insertedId}; HttpOnly; Secure; Path=/; SameSite=Lax`;
 
                   console.log('Setting cookie:', cookieValue);
                   set.headers['Set-Cookie'] = cookieValue;
