@@ -1,11 +1,14 @@
-import { APP_SESSION_COLLECTION, APP_USER_COLLECTION } from '../appUser';
+import { APP_USER_COLLECTION } from '../appUser';
 import { DatabaseType } from 'core';
 import Elysia from 'elysia';
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { DataType, getBackendApiEndPoint, getDatabaseType } from 'orm';
 
-const hasUserHandler = (user: any, set: any) => {
-  if (process.env.WITH_AUTH && !user) {
+const hasUserHandler = async (sessionId: string | undefined, set: any, db: Db) => {
+  if (
+    process.env.WITH_AUTH &&
+    (!sessionId || (await db.collection(APP_USER_COLLECTION).findOne({ _id: new ObjectId(sessionId) })))
+  ) {
     set.status = 401;
     return false;
   }
@@ -24,17 +27,17 @@ const authenticanRequired = { message: 'Authentication required' };
 export const registerRoutersOnAppForMongoDB = (app: Elysia, dataType: DataType, db: Db) => {
   getDatabaseType(dataType).fields.map(([l]) => {
     // GET single item - protected
-    app.get(getBackendApiEndPoint(l, 'SingleOutput'), async ({ params: { id }, user, set }: any) => {
-      console.log('SingleOutput - User context:', user);
-      return hasUserHandler(user, set)
+    app.get(getBackendApiEndPoint(l, 'SingleOutput'), async ({ params: { id }, set, cookie: { sessionId } }: any) => {
+      console.log('SingleOutput - User context:', sessionId);
+      return (await hasUserHandler(sessionId.value, set, db))
         ? await db.collection<DatabaseType[keyof DatabaseType][0]>(l).findOne({ _id: id })
         : authenticanRequired;
     });
 
     // GET all items - protected
-    app.get(getBackendApiEndPoint(l, 'BulkOutput'), async ({ user, set }: any) => {
-      console.log('BulkOutput - User context:', user);
-      return hasUserHandler(user, set)
+    app.get(getBackendApiEndPoint(l, 'BulkOutput'), async ({ set, cookie: { sessionId } }: any) => {
+      console.log('BulkOutput - User context:', sessionId);
+      return (await hasUserHandler(sessionId.value, set, db))
         ? db.collection<DatabaseType[keyof DatabaseType][0]>(l).find().toArray()
         : authenticanRequired;
     });
@@ -42,39 +45,35 @@ export const registerRoutersOnAppForMongoDB = (app: Elysia, dataType: DataType, 
     // POST update single item - protected
     app.post(
       getBackendApiEndPoint(l, 'SingleUpdate'),
-      async ({ params: { id }, body, user, set }: { params: { id: string }; body: any; user: any; set: any }) => {
-        return hasUserHandler(user, set)
+      async ({ params: { id }, body, cookie: { sessionId }, set }: any) => {
+        return (await hasUserHandler(sessionId.value, set, db))
           ? await db.collection(l).updateOne({ _id: id } as any, { $set: body })
           : authenticanRequired;
       }
     );
 
     // POST bulk update - protected
-    app.post(
-      getBackendApiEndPoint(l, 'BulkUpdate'),
-      async ({ body, user, set }: { body: { ids: string[]; dataToChange: any }; user: any; set: any }) => {
-        return hasUserHandler(user, set)
-          ? await db.collection(l).updateMany({}, { $set: body.dataToChange })
-          : authenticanRequired;
-      }
-    );
+    app.post(getBackendApiEndPoint(l, 'BulkUpdate'), async ({ body, cookie: { sessionId }, set }: any) => {
+      return (await hasUserHandler(sessionId.value, set, db))
+        ? await db.collection(l).updateMany({}, { $set: body.dataToChange })
+        : authenticanRequired;
+    });
 
     // DELETE single item - protected
     app.delete(
       getBackendApiEndPoint(l, 'SingleDelete'),
-      async ({ params: { id }, user, set }: { params: { id: string }; user: any; set: any }) => {
-        return hasUserHandler(user, set) ? await db.collection(l).deleteOne({ _id: id } as any) : authenticanRequired;
+      async ({ params: { id }, cookie: { sessionId }, set }: any) => {
+        return (await hasUserHandler(sessionId.value, set, db))
+          ? await db.collection(l).deleteOne({ _id: id } as any)
+          : authenticanRequired;
       }
     );
 
     // DELETE bulk items - protected
-    app.delete(
-      getBackendApiEndPoint(l, 'BulkDelete'),
-      async ({ body, user, set }: { body: { ids: string[] }; user: any; set: any }) => {
-        return hasUserHandler(user, set)
-          ? await db.collection(l).deleteMany({ _id: { $in: body.ids } } as any)
-          : authenticanRequired;
-      }
-    );
+    app.delete(getBackendApiEndPoint(l, 'BulkDelete'), async ({ body, cookie: { sessionId }, set }: any) => {
+      return (await hasUserHandler(sessionId.value, set, db))
+        ? await db.collection(l).deleteMany({ _id: { $in: body.ids } } as any)
+        : authenticanRequired;
+    });
   });
 };

@@ -9,7 +9,6 @@ export const Authentication: React.FC = () => {
   const [username, setUsername] = useState<string | undefined>(undefined);
   const [password, setPassword] = useState<string | undefined>(undefined);
 
-  console.log(document.cookie['session_id']);
 
   return (
     <span>

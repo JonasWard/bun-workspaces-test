@@ -15,8 +15,7 @@ if (process.env.NO_DATABASE !== 'true') db = await connectToDatabase();
 const app = new Elysia()
   .use(
     cors({
-      origin: process.env.FRONT_END!,
-      credentials: true
+      origin: process.env.FRONT_END!
     })
   )
   .listen(process.env.PORT || 5000);
