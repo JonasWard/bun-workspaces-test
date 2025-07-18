@@ -8,6 +8,7 @@
     "build": "bun --bun run build.ts"
   },
   "dependencies": {
+    "antd": "^5.26.5",
     "bun-plugin-tailwind": "^0.0.15",
     "core": "workspace:*",
     "orm": "workspace:*",

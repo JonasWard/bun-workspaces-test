@@ -23,7 +23,7 @@ const EntryRenderer: React.FC<{ fieldName: string; content: ContentType; oType: 
         <span key={fieldName}>{fieldName}</span>
         <details key={fieldName + '-detail'}>
           <summary>{fieldName}</summary>
-          <div className="flex flex-column">
+          <div className="flex flex-column ml-2">
             {Array.isArray(content) ? (
               content.map((c, i) => (
                 <EntryRenderer fieldName={`${fieldName} ${i.toString()}`} content={c} oType={oType} />
