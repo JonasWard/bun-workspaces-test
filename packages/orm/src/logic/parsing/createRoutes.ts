@@ -89,6 +89,7 @@ const fetchWrapper =
       const response = await fetch(`${backendUrl}${getFrontendApiEndPoint(labelName, method)(id!)}`, {
         method: apiEndPointMethod[method],
         body: body ?? null,
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
       return (await response.json()) as T;

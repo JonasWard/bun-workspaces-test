@@ -39,12 +39,12 @@ if (process.env.WITH_SWAGGER === 'true') {
 if (process.env.NO_DATABASE !== 'true') {
   if (!db) console.log('db was not initialised for some reason!');
   else {
-    registerRoutersOnAppForMongoDB(app as any, ExampleDataType, db);
+    registerRoutersOnAppForMongoDB(
+      process.env.WITH_AUTH === 'true' ? registerAppUser(app, db) : app,
+      ExampleDataType,
+      db
+    );
     console.log('registered MongoDB endpoints');
-    if (process.env.WITH_AUTH === 'true') {
-      registerAppUser(app, db);
-      console.log('registered MongoDB authentication logic');
-    }
   }
 }
 
