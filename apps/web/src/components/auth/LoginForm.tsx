@@ -5,10 +5,7 @@ import { BACKEND_URL } from '../../config/config';
 
 export const LoginForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const { setUser, setSessionId } = useAuthStore((state) => ({
-    setUser: state.setUser,
-    setSessionId: state.setSessionId
-  }));
+  const setUser = useAuthStore((state) => state.setUser);
 
   const onFinish = async (values: { username: string; password: string }) => {
     setLoading(true);
@@ -32,17 +29,6 @@ export const LoginForm: React.FC = () => {
       console.log('=== END LOGIN DEBUG ===');
 
       if (response.ok) {
-        // Extract session ID from Set-Cookie header as fallback
-        const setCookieHeader = response.headers.get('set-cookie');
-        if (setCookieHeader) {
-          const sessionMatch = setCookieHeader.match(/session_id=([^;]+)/);
-          if (sessionMatch) {
-            const sessionId = sessionMatch[1];
-            console.log('Extracted session ID:', sessionId);
-            setSessionId(sessionId);
-          }
-        }
-
         setUser(data);
         message.success('Login successful!');
         window.location.hash = '/';
