@@ -40,6 +40,7 @@ export const registerAppUser = (app: Elysia, db: Db) => {
     // Auth middleware: find session in MongoDB
     .derive(async ({ cookies }) => {
       const sessionId = cookies['session_id'];
+      console.log('sessionId:' + sessionId);
       if (!sessionId) return { user: null };
 
       const session = await db.collection(APP_SESSION_COLLECTION).findOne({ _id: new ObjectId(sessionId) } as any);
