@@ -14,12 +14,13 @@ export const registerRoutersOnAppForMongoDB = (app: Elysia, dataType: DataType, 
   getDatabaseType(dataType).fields.map(([l]) => {
     app.get(
       getBackendApiEndPoint(l, 'SingleOutput'),
-      async ({ params: { id } }: { params: { id: string } }) =>
+      async ({ params: { id } }: any) =>
         await db.collection<DatabaseType[keyof DatabaseType][0]>(l).findOne({ _id: id })
     );
-    app.get(getBackendApiEndPoint(l, 'BulkOutput'), () =>
-      db.collection<DatabaseType[keyof DatabaseType][0]>(l).find().toArray()
-    );
+    app.get(getBackendApiEndPoint(l, 'BulkOutput'), ({ cookie }) => {
+      console.log(cookie['session_id']);
+      return db.collection<DatabaseType[keyof DatabaseType][0]>(l).find().toArray();
+    });
     app.post(
       getBackendApiEndPoint(l, 'SingleUpdate'),
       async ({ params: { id }, body }: { params: { id: string }; body: any }) =>
