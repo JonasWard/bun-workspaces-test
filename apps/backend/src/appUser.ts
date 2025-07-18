@@ -43,8 +43,10 @@ export const registerAppUser = (app: Elysia, db: Db) => {
       if (!sessionId) return { user: null };
 
       const session = await db.collection(APP_SESSION_COLLECTION).findOne({ _id: new ObjectId(sessionId) } as any);
+      console.log('session found:' + JSON.stringify(session, null, 2));
       if (session && new Date(session.expiresAt) >= new Date()) {
         const user = await db.collection(APP_USER_COLLECTION).findOne({ _id: session.userID } as any);
+        console.log('user found:' + JSON.stringify(user, null, 2));
         return { user: user ? { id: user._id, username: user.username, email: user.email } : null };
       }
       return { user: null };
@@ -166,7 +168,7 @@ export const registerAppUser = (app: Elysia, db: Db) => {
           .post('/logout', async ({ cookies, set }) => {
             const sessionId = cookies['session_id'];
             try {
-              await db.collection(APP_SESSION_COLLECTION).deleteOne({ _id: sessionId });
+              await db.collection(APP_SESSION_COLLECTION).deleteOne({ _id: new ObjectId(sessionId) });
 
               set.headers['Set-Cookie'] = 'session_id=; Max-Age=0; Path=/; HttpOnly';
 
