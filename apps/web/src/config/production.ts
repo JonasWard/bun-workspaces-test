@@ -1,1 +1,1 @@
-export const BACKEND_URL = 'https://bun-workspaces-test.onrender.com';
+export const BACKEND_URL = 'http://bun-workspaces-test.onrender.com';
