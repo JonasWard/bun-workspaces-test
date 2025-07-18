@@ -28,7 +28,7 @@ export const registerRoutersOnAppForMongoDB = (app: Elysia, dataType: DataType, 
   getDatabaseType(dataType).fields.map(([l]) => {
     // GET single item - protected
     app.get(getBackendApiEndPoint(l, 'SingleOutput'), async ({ params: { id }, set, cookie: { sessionId } }: any) => {
-      console.log('SingleOutput - User context:', sessionId);
+      console.log('SingleOutput - User context sessionId:', sessionId.value);
       return (await hasUserHandler(sessionId.value, set, db))
         ? await db.collection<DatabaseType[keyof DatabaseType][0]>(l).findOne({ _id: id })
         : authenticanRequired;
@@ -36,7 +36,7 @@ export const registerRoutersOnAppForMongoDB = (app: Elysia, dataType: DataType, 
 
     // GET all items - protected
     app.get(getBackendApiEndPoint(l, 'BulkOutput'), async ({ set, cookie: { sessionId } }: any) => {
-      console.log('BulkOutput - User context:', sessionId);
+      console.log('BulkOutput - User context sessionId:', sessionId.value);
       return (await hasUserHandler(sessionId.value, set, db))
         ? db.collection<DatabaseType[keyof DatabaseType][0]>(l).find().toArray()
         : authenticanRequired;
