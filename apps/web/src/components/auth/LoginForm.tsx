@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input, message, Modal } from 'antd';
 import { useAuthStore } from '../../store/useAuthStore';
 import { BACKEND_URL } from '../../config/config';
 
@@ -36,38 +36,40 @@ export const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-      <Form name="login" onFinish={onFinish} layout="vertical" autoComplete="off">
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
-        >
-          <Input />
-        </Form.Item>
+    <Modal open closeIcon={null} footer={null}>
+      <div className="flex flex-col gap-6">
+        <span className="font-bold text-[2rem] m-auto">💫 Welcome to Slab 2 Reuse 💫</span>
+        <Form name="login" layout="vertical" onFinish={onFinish} autoComplete="off">
+          <Form.Item
+            label="Username"
+            name="username"
+            rules={[{ required: true, message: 'Please input your username!' }]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
-        >
-          <Input.Password />
-        </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} className="w-full">
-            Login
-          </Button>
-        </Form.Item>
-      </Form>
-
-      <div className="text-center mt-4">
-        <span>Don't have an account? </span>
-        <a href="#/register" className="text-blue-500 hover:text-blue-700">
-          Register here
-        </a>
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[{ required: true, message: 'Please input your password!' }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item>
+            <div className="flex flex-row gap-4 items-center justify-between w-full">
+              <div className="items-center flex flex-row gap-3">
+                <span>Don't have an account? </span>
+                <Button variant="text" href="#/register" className="text-blue-500 hover:text-blue-700">
+                  Register here
+                </Button>
+              </div>
+              <Button type="primary" htmlType="submit" loading={loading} className="w-full">
+                Login
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
       </div>
-    </div>
+    </Modal>
   );
 };

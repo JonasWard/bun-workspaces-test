@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input, message, Modal } from 'antd';
 import { BACKEND_URL } from '../../config/config';
 
 export const RegisterForm: React.FC = () => {
@@ -42,63 +42,66 @@ export const RegisterForm: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
-      <Form name="register" onFinish={onFinish} layout="vertical" autoComplete="off">
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[
-            { required: true, message: 'Please input your username!' },
-            { min: 3, message: 'Username must be at least 3 characters!' }
-          ]}
-        >
-          <Input />
-        </Form.Item>
+    <Modal open closeIcon={null} footer={null}>
+      <div className="flex flex-col gap-6">
+        <span className="font-bold text-[2rem] m-auto">💫 Welcome to Slab 2 Reuse 💫</span>
+        <Form name="register" onFinish={onFinish} layout="vertical" autoComplete="off">
+          <Form.Item
+            label="Username"
+            name="username"
+            rules={[
+              { required: true, message: 'Please input your username!' },
+              { min: 3, message: 'Username must be at least 3 characters!' }
+            ]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            { required: true, message: 'Please input your email!' },
-            { type: 'email', message: 'Please enter a valid email!' }
-          ]}
-        >
-          <Input />
-        </Form.Item>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              { required: true, message: 'Please input your email!' },
+              { type: 'email', message: 'Please enter a valid email!' }
+            ]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[
-            { required: true, message: 'Please input your password!' },
-            { min: 6, message: 'Password must be at least 6 characters!' }
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              { required: true, message: 'Please input your password!' },
+              { min: 6, message: 'Password must be at least 6 characters!' }
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
 
-        <Form.Item
-          label="Confirm Password"
-          name="confirmPassword"
-          rules={[{ required: true, message: 'Please confirm your password!' }]}
-        >
-          <Input.Password />
-        </Form.Item>
+          <Form.Item
+            label="Confirm Password"
+            name="confirmPassword"
+            rules={[{ required: true, message: 'Please confirm your password!' }]}
+          >
+            <Input.Password />
+          </Form.Item>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} className="w-full">
-            Register
-          </Button>
-        </Form.Item>
-      </Form>
-
-      <div className="text-center mt-4">
-        <span>Already have an account? </span>
-        <a href="#/login" className="text-blue-500 hover:text-blue-700">
-          Login here
-        </a>
+          <Form.Item>
+            <div className="flex flex-row gap-4 items-center justify-between w-full">
+              <div className="items-center flex flex-row gap-3">
+                <span>Already have an account? </span>
+                <Button variant="text" href="#/login" className="text-blue-500 hover:text-blue-700">
+                  Login here
+                </Button>
+              </div>
+              <Button type="primary" htmlType="submit" loading={loading} className="w-full">
+                Register
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
       </div>
-    </div>
+    </Modal>
   );
 };
