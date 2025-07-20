@@ -13,9 +13,9 @@ import './customising-styling.css';
 import { NestedDataForObjectRenderer } from './components/data/NestedDataForObjectRenderer';
 import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { WithBackendCall } from './components/data/content/WithBackendCall';
 import { BackendHealthCheck } from './components/general/BackendHealthCheck';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 let router = createHashRouter([
   {
@@ -28,15 +28,15 @@ let router = createHashRouter([
   },
   {
     path: '/',
-    element: <App />
+    element: <ProtectedRoute children={<App />} />
   },
   {
     path: '/get/:collection/:id',
-    element: <WithBackendCall />
+    element: <ProtectedRoute children={<WithBackendCall />} />
   },
   {
     path: '/:collectionName/:id',
-    element: <NestedDataForObjectRenderer />
+    element: <ProtectedRoute children={<NestedDataForObjectRenderer />} />
   },
   {
     path: '*',

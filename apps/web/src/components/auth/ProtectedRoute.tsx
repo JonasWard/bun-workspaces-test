@@ -39,13 +39,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     }
   }, [user, setUser, clearUser]);
 
-  if (loading) {
-    return <div>Checking authentication...</div>;
-  }
-
-  if (!user) {
-    return null;
-  }
+  if (loading) return <div>Checking authentication...</div>;
+  if (!user) return <span>you are not logged in! nothing to see here for you!</span>;
 
   return <>{children}</>;
 };
