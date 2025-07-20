@@ -1,18 +1,19 @@
-import { APP_USER_COLLECTION } from '../appUser';
+import { APP_SESSION_COLLECTION, APP_USER_COLLECTION } from '../appUser';
 import { DatabaseType } from 'core';
 import Elysia from 'elysia';
 import { Db, ObjectId } from 'mongodb';
 import { DataType, getBackendApiEndPoint, getDatabaseType } from 'orm';
 
-const hasUserHandler = async (sessionId: string | undefined, set: any, db: Db) => {
-  if (
-    process.env.WITH_AUTH &&
-    (!sessionId || (await db.collection(APP_USER_COLLECTION).findOne({ _id: new ObjectId(sessionId) })))
-  ) {
-    set.status = 401;
-    return false;
+const hasUserHandler = async (sessionId: string | undefined, set: any, db: Db): Promise<boolean> => {
+  if (!process.env.WITH_AUTH) return true;
+  if (sessionId) {
+    const result = await db.collection(APP_SESSION_COLLECTION).findOne({ _id: new ObjectId(sessionId) });
+    if (result) return true;
   }
-  return true;
+
+  // if this doesn't work, kill the process
+  set.status = 403;
+  return false;
 };
 
 const authenticanRequired = { message: 'Authentication required' };
@@ -27,20 +28,18 @@ const authenticanRequired = { message: 'Authentication required' };
 export const registerRoutersOnAppForMongoDB = (app: Elysia, dataType: DataType, db: Db) => {
   getDatabaseType(dataType).fields.map(([l]) => {
     // GET single item - protected
-    app.get(getBackendApiEndPoint(l, 'SingleOutput'), async ({ params: { id }, set, cookie: { sessionId } }: any) => {
-      console.log('SingleOutput - User context sessionId:', sessionId.value);
-      return (await hasUserHandler(sessionId.value, set, db))
+    app.get(getBackendApiEndPoint(l, 'SingleOutput'), async ({ params: { id }, set, cookie: { sessionId } }: any) =>
+      (await hasUserHandler(sessionId.value, set, db))
         ? await db.collection<DatabaseType[keyof DatabaseType][0]>(l).findOne({ _id: id })
-        : authenticanRequired;
-    });
+        : authenticanRequired
+    );
 
     // GET all items - protected
-    app.get(getBackendApiEndPoint(l, 'BulkOutput'), async ({ set, cookie: { sessionId } }: any) => {
-      console.log('BulkOutput - User context sessionId:', sessionId.value);
-      return (await hasUserHandler(sessionId.value, set, db))
+    app.get(getBackendApiEndPoint(l, 'BulkOutput'), async ({ set, cookie: { sessionId } }: any) =>
+      (await hasUserHandler(sessionId.value, set, db))
         ? db.collection<DatabaseType[keyof DatabaseType][0]>(l).find().toArray()
-        : authenticanRequired;
-    });
+        : authenticanRequired
+    );
 
     // POST update single item - protected
     app.post(
