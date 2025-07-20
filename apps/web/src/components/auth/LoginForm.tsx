@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Form, Input, message, Modal } from 'antd';
 import { useAuthStore } from '../../store/useAuthStore';
 import { BACKEND_URL, SHOW_REGISTER } from '../../config/config';
+import { useModelStore } from '@/store/useModelStore';
 
 export const LoginForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -24,6 +25,7 @@ export const LoginForm: React.FC = () => {
       if (response.ok) {
         setUser(data);
         message.success('Login successful!');
+        await useModelStore.getState().getAllData();
         window.location.hash = '/';
       } else {
         message.error(data.message || 'Login failed');
