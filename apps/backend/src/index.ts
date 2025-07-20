@@ -57,4 +57,6 @@ if (process.env.NO_DATABASE === 'true') {
   console.log('registered Boilerplate endpoints');
 }
 
+app.get('is-alive', () => ({ success: true }));
+
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
