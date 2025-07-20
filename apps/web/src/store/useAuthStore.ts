@@ -29,7 +29,8 @@ export const useAuthStore = create<AuthStoreType>()(
         set({ isLoading: true });
         try {
           const response = await fetch(`${BACKEND_URL}/app-user/me`, {
-            credentials: 'include'
+            credentials: 'include',
+            method: 'GET'
           });
 
           if (response.ok) {

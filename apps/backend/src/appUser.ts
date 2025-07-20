@@ -153,13 +153,14 @@ export const registerAppUser = (app: Elysia, db: Db) => {
               return { success: false, message: 'Logout failed' };
             }
           })
-          .get('/me', async ({ set, cookie: { sessionId } }) => {
-            const user = db.collection(APP_USER_COLLECTION).find({ _id: new ObjectId(sessionId.value) });
-            if (!user) {
-              set.status = 401;
-              return { message: 'Not authenticated' };
+          .get('/me', async ({ set, cookie: { sessionId } }): Promise<any> => {
+            const session = await db.collection(APP_SESSION_COLLECTION).findOne({ _id: new ObjectId(sessionId.value) });
+            if (session) {
+              const user = db.collection(APP_USER_COLLECTION).find({ _id: new ObjectId(sessionId.value) });
+              if (user) return user;
             }
-            return user;
+            set.status = 401;
+            return { message: 'Not authenticated' };
           })
           .put('/update', () => {})
     );

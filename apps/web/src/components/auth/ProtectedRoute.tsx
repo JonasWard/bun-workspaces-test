@@ -14,7 +14,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const checkAuth = async () => {
       try {
         const response = await fetch(`${BACKEND_URL}/app-user/me`, {
-          credentials: 'include'
+          credentials: 'include',
+          method: 'GET'
         });
 
         if (response.ok) {
