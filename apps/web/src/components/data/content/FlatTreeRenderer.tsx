@@ -15,7 +15,7 @@ const EntryRenderer: React.FC<{
   </>
 );
 
-export const FlatTreeRender: React.FC<{
+export const FlatTreeRenderer: React.FC<{
   dataDefinition: NestedReferences<DatabaseType>[];
   o: DatabaseType[keyof DatabaseType][0];
 }> = ({ dataDefinition, o }) => {

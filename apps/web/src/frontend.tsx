@@ -5,7 +5,7 @@
  * It is included in `src/index.html`.
  */
 
-import { createRoot } from "react-dom/client";
+import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { createHashRouter, RouterProvider } from 'react-router';
 import { Missing } from './components/general/Missing';
@@ -14,6 +14,7 @@ import { NestedDataForObjectRenderer } from './components/data/NestedDataForObje
 import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { WithBackendCall } from './components/data/content/WithBackendCall';
 
 let router = createHashRouter([
   {
@@ -29,6 +30,14 @@ let router = createHashRouter([
     element: (
       <ProtectedRoute>
         <App />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: '/get/:collection/:id',
+    element: (
+      <ProtectedRoute>
+        <WithBackendCall />
       </ProtectedRoute>
     )
   },
@@ -51,8 +60,8 @@ function start() {
   root.render(<RouterProvider router={router} />);
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", start);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', start);
 } else {
   start();
 }
