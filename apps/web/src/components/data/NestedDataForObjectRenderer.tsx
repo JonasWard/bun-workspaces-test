@@ -1,10 +1,7 @@
 import { useParams } from 'react-router';
-import { useModelStore } from '@/store/useModelStore';
-import { useEffect } from 'react';
 import { DatabaseType } from 'core';
 import { MissingObject } from './content/MissingObject';
 import { CollapsableRenderer } from './content/CollapsableRenderer';
-import { Loading } from './content/Loading';
 import { Page } from '../general/Page';
 
 export const NestedDataForObjectRenderer: React.FC = () => {
