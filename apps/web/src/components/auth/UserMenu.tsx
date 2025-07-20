@@ -26,7 +26,12 @@ export const UserMenu: React.FC = () => {
     }
   };
 
-  if (!user) return null;
+  if (!user)
+    return (
+      <Button type="text" href="#/login" icon={<UserOutlined />}>
+        login
+      </Button>
+    );
 
   const items = [
     {
