@@ -1,4 +1,4 @@
-import { Elysia, Handler, t } from 'elysia';
+import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 import { ExampleDataType, registerRoutersOnAppForDummyData } from 'orm';
 import { connectToDatabase } from './database';
@@ -15,6 +15,8 @@ if (process.env.NO_DATABASE !== 'true') db = await connectToDatabase();
 const app = new Elysia()
   .use(
     cors({
+      allowedHeaders: ['Content-Type'],
+      credentials: true,
       origin: [
         process.env.FRONT_END!,
         process.env.FRONT_END!.replace('https://', 'http://') // HTTP fallback
