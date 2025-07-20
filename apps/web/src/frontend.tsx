@@ -15,6 +15,7 @@ import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { WithBackendCall } from './components/data/content/WithBackendCall';
+import { BackendHealthCheck } from './components/general/BackendHealthCheck';
 
 let router = createHashRouter([
   {
@@ -57,7 +58,11 @@ let router = createHashRouter([
 
 function start() {
   const root = createRoot(document.getElementById('root')!);
-  root.render(<RouterProvider router={router} />);
+  root.render(
+    <BackendHealthCheck>
+      <RouterProvider router={router} />
+    </BackendHealthCheck>
+  );
 }
 
 if (document.readyState === 'loading') {
