@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Form, Input, message, Modal } from 'antd';
 import { useAuthStore } from '../../store/useAuthStore';
-import { BACKEND_URL } from '../../config/config';
+import { BACKEND_URL, SHOW_REGISTER } from '../../config/config';
 
 export const LoginForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -57,12 +57,14 @@ export const LoginForm: React.FC = () => {
           </Form.Item>
           <Form.Item>
             <div className="flex flex-row gap-4 items-center justify-between w-full">
-              <div className="items-center flex flex-row gap-3">
-                <span>Don't have an account? </span>
-                <Button variant="text" href="#/register" className="text-blue-500 hover:text-blue-700">
-                  Register here
-                </Button>
-              </div>
+              {SHOW_REGISTER ? (
+                <div className="items-center flex flex-row gap-3">
+                  <span>Don't have an account? </span>
+                  <Button variant="text" href="#/register" className="text-blue-500 hover:text-blue-700">
+                    Register here
+                  </Button>
+                </div>
+              ) : null}
               <Button type="primary" htmlType="submit" loading={loading} className="w-full">
                 Login
               </Button>
