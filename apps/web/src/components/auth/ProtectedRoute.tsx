@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Loading } from '../data/content/Loading';
 import { BACKEND_URL } from '../../config/config';
 
 interface ProtectedRouteProps {
@@ -41,7 +40,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }, [user, setUser, clearUser]);
 
   if (loading) {
-    return <Loading />;
+    return <div>Checking authentication...</div>;
   }
 
   if (!user) {

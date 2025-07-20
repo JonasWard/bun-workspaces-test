@@ -9,25 +9,15 @@ import { Page } from '../general/Page';
 
 export const NestedDataForObjectRenderer: React.FC = () => {
   const { collectionName, id } = useParams();
-  const data = useModelStore((s) => s.data);
-  const loaded = useModelStore((s) => s.loaded);
-
-  useEffect(() => {
-    if (Object.keys(data).length === 0) useModelStore.getState().getAllData();
-  }, [data]);
 
   return (
     <Page>
-      {loaded ? (
-        collectionName && id ? (
-          <div className="grid grid-cols-[100px_auto] gap-2 p-2 bg-zinc-200">
-            <CollapsableRenderer collectionName={collectionName as keyof DatabaseType} id={id} />
-          </div>
-        ) : (
-          <MissingObject collectionName={collectionName} id={id} renderStyle="full-page" />
-        )
+      {collectionName && id ? (
+        <div className="grid grid-cols-[100px_auto] gap-2 p-2 bg-zinc-200">
+          <CollapsableRenderer collectionName={collectionName as keyof DatabaseType} id={id} />
+        </div>
       ) : (
-        <Loading />
+        <MissingObject collectionName={collectionName} id={id} renderStyle="full-page" />
       )}
     </Page>
   );

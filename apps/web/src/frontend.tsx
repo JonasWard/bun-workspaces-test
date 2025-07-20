@@ -28,27 +28,15 @@ let router = createHashRouter([
   },
   {
     path: '/',
-    element: (
-      <ProtectedRoute>
-        <App />
-      </ProtectedRoute>
-    )
+    element: <App />
   },
   {
     path: '/get/:collection/:id',
-    element: (
-      <ProtectedRoute>
-        <WithBackendCall />
-      </ProtectedRoute>
-    )
+    element: <WithBackendCall />
   },
   {
     path: '/:collectionName/:id',
-    element: (
-      <ProtectedRoute>
-        <NestedDataForObjectRenderer />
-      </ProtectedRoute>
-    )
+    element: <NestedDataForObjectRenderer />
   },
   {
     path: '*',

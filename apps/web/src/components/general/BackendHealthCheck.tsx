@@ -1,4 +1,5 @@
 import { BACKEND_URL } from '../../config/config';
+import { useModelStore } from '../../store/useModelStore';
 import { Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 
@@ -8,8 +9,10 @@ interface BackendHealthCheckProps {
 
 export const BackendHealthCheck: React.FC<BackendHealthCheckProps> = ({ children }) => {
   const [isBackendAlive, setIsBackendAlive] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
+
+  const loaded = useModelStore((s) => s.loaded);
+  const loadedCollections = useModelStore((s) => s.loadedCollections);
 
   const checkBackendHealth = async (): Promise<boolean> => {
     try {
@@ -37,15 +40,14 @@ export const BackendHealthCheck: React.FC<BackendHealthCheckProps> = ({ children
     let intervalId: NodeJS.Timeout;
 
     const performHealthCheck = async () => {
-      setIsChecking(true);
       const isAlive = await checkBackendHealth();
 
       if (isAlive) {
         setIsBackendAlive(true);
-        setIsChecking(false);
-        if (intervalId) {
-          clearInterval(intervalId);
-        }
+        if (intervalId) clearInterval(intervalId);
+
+        // Load all data once backend is alive
+        useModelStore.getState().getAllData();
       } else {
         setRetryCount((prev) => prev + 1);
       }
@@ -66,18 +68,31 @@ export const BackendHealthCheck: React.FC<BackendHealthCheckProps> = ({ children
     };
   }, [isBackendAlive]);
 
-  if (isBackendAlive) {
+  // Show children only when backend is alive AND data is loaded
+  if (isBackendAlive && loaded) {
     return <>{children}</>;
   }
 
+  // Show loading modal with integrated Loading component logic
   return (
     <Modal open closeIcon={null} footer={null}>
-      <div className="mb-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+      <div className="flex flex-col gap-3 items-center text-base">
+        {!isBackendAlive ? (
+          <>
+            <div className="mb-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            </div>
+            <span className="text-xl font-semibold">Connecting to Backend</span>
+            <span className="text-gray-600">Backend is not responding</span>
+            <span className="text-sm text-gray-500">Retry attempt: {retryCount}</span>
+          </>
+        ) : (
+          <>
+            <span>loaded {loadedCollections.length} collections</span>
+            <span>Loading application data...</span>
+          </>
+        )}
       </div>
-      <h2 className="text-xl font-semibold mb-2">Connecting to Backend</h2>
-      <p className="text-gray-600 mb-2">{isChecking ? 'Checking backend status...' : 'Backend is not responding'}</p>
-      {retryCount > 0 && <p className="text-sm text-gray-500">Retry attempt: {retryCount}</p>}
     </Modal>
   );
 };

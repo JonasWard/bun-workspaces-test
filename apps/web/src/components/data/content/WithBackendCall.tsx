@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Loading } from './Loading';
 import { BACKEND_URL } from '@/config/config';
 import { GenericRenderer } from './GenericRenderer';
 
@@ -34,13 +33,11 @@ export const WithBackendCall: React.FC = () => {
       }
     };
 
-    if (collection && id) {
-      fetchData();
-    }
+    if (collection && id) fetchData();
   }, [collection, id]);
 
   if (loading) {
-    return <Loading />;
+    return <div>Loading specific data...</div>;
   }
 
   if (error) {
