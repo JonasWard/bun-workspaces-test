@@ -91,7 +91,7 @@ export const RenderObject: React.FC<{
             key={i}
             field={field}
             updateField={(f) => updateObject({ ...o, fields: [...o.fields.slice(0, i), f, ...o.fields.slice(i + 1)] })}
-            deleteField={() => updateObject({ ...o, fields: [...o.fields.slice(0, i + 1), ...o.fields.slice(i)] })}
+            deleteField={() => updateObject({ ...o, fields: [...o.fields.slice(0, i), ...o.fields.slice(i + 1)] })}
             validReferenceTypes={validReferenceTypes}
             fieldValidationStates={fieldValidationStates}
           />
