@@ -34,8 +34,8 @@ export const DefaultBaseObjectDefinitions: DataType = {
 const getTypeName = (t: TypeDefinition): FieldDefinitionReserved => [TYPE_S, `'${t.label}'`, false, false, false];
 const getIdDefinition = (): FieldDefinitionReserved => [ID_S, 'string', false, false, false];
 
-export const getFieldsWithReferencableForType = (typeDef: TypeDefinition): FieldDefinition[] => [
+export const getFieldsWithReferencableForType = (typeDef: TypeDefinition, withType?: boolean): FieldDefinition[] => [
   ...(typeDef.canReference ? [getIdDefinition()] : []),
-  ...(typeDef.label !== DATABASE_TYPE_S ? [getTypeName(typeDef)] : []),
+  ...((withType === undefined ? typeDef.label !== DATABASE_TYPE_S : withType) ? [getTypeName(typeDef)] : []),
   ...typeDef.fields
 ];
