@@ -83,7 +83,9 @@ export const App = () => {
       </div>
       <div
         className={`grid w-full h-[calc(100svh-60px)] gap-6 ${
-          (typeLabelRendererInFocus ?? viewLabelRendererInFocus ?? localLabelRendererInFocus) ? 'grid-cols-[1fr_1fr]' : 'grid-cols-[1fr]'
+          typeLabelRendererInFocus ?? viewLabelRendererInFocus ?? localLabelRendererInFocus
+            ? 'grid-cols-[1fr_1fr]'
+            : 'grid-cols-[1fr]'
         }`}
       >
         <div className="max-h-[calc(100svh-60px-16px)] overflow-y-scroll">
@@ -99,16 +101,47 @@ export const App = () => {
               validReferenceTypes={getValidReferenceTypes(data)}
               setTypeLabelInFocus={upsertTypeLabel}
               setViewLabelInFocus={upsertViewLabel}
-              setLocalLabelInFocus = {upsertLocalLabel}
+              setLocalLabelInFocus={upsertLocalLabel}
               labelInFocus={typeLabelRendererInFocus ?? viewLabelRendererInFocus ?? ''}
             />
           </div>
         </div>
         <div className="max-h-[calc(100svh-60px-16px)] overflow-scroll overflow-x-auto">
           <div className="m-4">
-            {typeLabelRendererInFocus ? <TypeRenderer label={typeLabelRendererInFocus} setLabel={upsertTypeLabel} data={data} showDetails={typeShowDetails} /> : null}
-            {viewLabelRendererInFocus ? <EditViewsForType localValue={data.databaseTypeLocal[viewLabelRendererInFocus] ?? {}} typeName={viewLabelRendererInFocus} validOptions={Object.keys(data.databaseTypeLocal[viewLabelRendererInFocus] ?? {})} currentOptions={data.databaseTypeView[viewLabelRendererInFocus] ?? []} setOptions={(newOptions) => setData({...data, databaseTypeView: {...data.databaseTypeView, [viewLabelRendererInFocus]: newOptions}})} /> : null}
-            {localLabelRendererInFocus ? <EditLocalisationSheet locals={data.databaseTypeLocal[localLabelRendererInFocus] ?? {}} typeName={localLabelRendererInFocus} setLocals={(newOptions) => setData({...data, databaseTypeLocal: {...data.databaseTypeLocal, [localLabelRendererInFocus]: newOptions}})} /> : null}
+            {typeLabelRendererInFocus ? (
+              <TypeRenderer
+                label={typeLabelRendererInFocus}
+                setLabel={upsertTypeLabel}
+                data={data}
+                showDetails={typeShowDetails}
+              />
+            ) : null}
+            {viewLabelRendererInFocus ? (
+              <EditViewsForType
+                localValue={data.databaseTypeLocal[viewLabelRendererInFocus] ?? {}}
+                typeName={viewLabelRendererInFocus}
+                validOptions={Object.keys(data.databaseTypeLocal[viewLabelRendererInFocus] ?? {})}
+                currentOptions={data.databaseTypeView[viewLabelRendererInFocus] ?? []}
+                setOptions={(newOptions) =>
+                  setData({
+                    ...data,
+                    databaseTypeView: { ...data.databaseTypeView, [viewLabelRendererInFocus]: newOptions }
+                  })
+                }
+              />
+            ) : null}
+            {localLabelRendererInFocus ? (
+              <EditLocalisationSheet
+                locals={data.databaseTypeLocal[localLabelRendererInFocus] ?? {}}
+                typeName={localLabelRendererInFocus}
+                setLocals={(newOptions) =>
+                  setData({
+                    ...data,
+                    databaseTypeLocal: { ...data.databaseTypeLocal, [localLabelRendererInFocus]: newOptions }
+                  })
+                }
+              />
+            ) : null}
           </div>
         </div>
       </div>
