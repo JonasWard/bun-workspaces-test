@@ -11,6 +11,7 @@ import { EditViewsForType } from './components/ioUI/views/EditViewsForType';
 import { EditLocalisationSheet } from './components/ioUI/localisation/EditLocalisationSheet';
 import { DownloadTypeMap } from './components/ioUI/DownloadTypeMap';
 import { DownloadSpringBootBackend } from './components/ioUI/DownloadSpringBootBackend';
+import { DownloadConvexSchema } from './components/ioUI/DownloadConvexSchema';
 
 export const App = () => {
   const [data, setData] = useState<DataType>(ExampleDataType);
@@ -77,6 +78,7 @@ export const App = () => {
           <DownloadTypeSheet data={data} />
           <DownloadTypeMap data={data} />
           <DownloadSpringBootBackend data={data} />
+          <DownloadConvexSchema data={data} />
         </span>
       </div>
       <div
