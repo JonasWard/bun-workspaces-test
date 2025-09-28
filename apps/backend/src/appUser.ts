@@ -126,10 +126,6 @@ export const registerAppUser = (app: Elysia, db: Db) => {
                   sessionId.secure = true;
                   sessionId.expires = newSessionData.expiresAt;
 
-                  console.log('whats happening?');
-                  console.log(result);
-                  console.log(sessionId.value);
-
                   return { username: result.username, email: result.email };
                 } catch (e: any) {
                   set.status = 500;
