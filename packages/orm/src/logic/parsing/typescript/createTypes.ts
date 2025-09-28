@@ -1,9 +1,9 @@
 // this filed parse a `DataType` definition into a typescript typesheet
 
-import { DataType, EnumDefinition, FieldDefinition, TypeDefinition } from '../../types';
+import { DataType, EnumDefinition, FieldDefinition, TypeDefinition } from '../../../types';
 import { getDatabaseType } from './databaseType';
-import { getFieldsWithReferencableForType } from '../defaultOptions';
-import { getFieldLabelName, isFieldArray, isFieldOptional, isFieldReference, getFieldType } from '../typeDefinition';
+import { getFieldsWithReferencableForType } from '../../defaultOptions';
+import { getFieldLabelName, isFieldArray, isFieldOptional, isFieldReference, getFieldType } from '../../typeDefinition';
 
 const getEnum = (enumDef: EnumDefinition) => `export enum ${enumDef.label} {
   ${enumDef.stringValues.map((s) => `${s} = '${s}'`).join(',\n  ')}

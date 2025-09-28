@@ -1,5 +1,5 @@
 import { DATABASE_TYPE_S } from '@/enums';
-import { DataType, FieldDefinition, TypeDefinition } from '../../types';
+import { DataType, FieldDefinition, TypeDefinition } from '../../../types';
 
 const forceCamelCase = (string: string): string =>
   string

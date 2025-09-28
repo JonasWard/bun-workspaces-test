@@ -1,5 +1,5 @@
 import { DataType } from '../../types';
-import { getDatabaseType } from './databaseType';
+import { getDatabaseType } from './typescript/databaseType';
 import { DBType } from '../../types/dbType';
 
 type SingleOutputMethods<T extends DBType> = {
@@ -199,7 +199,9 @@ export const getDeleteMethodsForEachReferencableType = <T extends DBType>(dataTy
     ])
   ) as SingleDeleteMethods<T>;
 
-export const getDeleteBulkRouteForEachReferencableType = <T extends DBType>(dataType: DataType): Record<keyof T, string> =>
+export const getDeleteBulkRouteForEachReferencableType = <T extends DBType>(
+  dataType: DataType
+): Record<keyof T, string> =>
   Object.fromEntries(
     getDatabaseType(dataType).fields.map(([labelName]) => [labelName as any as keyof T, `/${labelName}/delete-many`])
   ) as Record<keyof T, string>;
@@ -215,7 +217,9 @@ export const getDeleteMethodsFrontendForEachReferencableType = <T extends DBType
     ])
   ) as SingleDeleteMethodsFrontend<T>;
 
-export const getDeleteBulkMethodsForEachReferencableType = <T extends DBType>(dataType: DataType): BulkDeleteMethods<T> =>
+export const getDeleteBulkMethodsForEachReferencableType = <T extends DBType>(
+  dataType: DataType
+): BulkDeleteMethods<T> =>
   Object.fromEntries(
     getDatabaseType(dataType).fields.map(([labelName]) => [
       labelName as any as keyof T,
@@ -242,12 +246,12 @@ export const getDeleteBulkMethodFrontendForEachReferencableType = <T extends DBT
   ) as BulkDeleteMethodsFrontend<T>;
 
 const debugWrapper = (...v: any[]) => {
-  console.log(
-    v
-      .map((e) => (Array.isArray(e) ? e.length : e))
-      .reverse()
-      .join(', ')
-  );
+  // console.log(
+  //   v
+  //     .map((e) => (Array.isArray(e) ? e.length : e))
+  //     .reverse()
+  //     .join(', ')
+  // );
   return v[0];
 };
 
